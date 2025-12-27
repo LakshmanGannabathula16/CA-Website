@@ -18,19 +18,20 @@ from django.contrib import admin
 from django.urls import path, re_path
 from django.shortcuts import render
 from careers.views import apply_form, live_news
+from django.views.generic import TemplateView
+from django.urls import re_path
+
+urlpatterns += [
+    re_path(r"^.*$", TemplateView.as_view(template_name="index.html")),
+]
 
 
-# React entry point
-# def react_app(request):
-#     return render(request, "index.html")
+
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-
-    # API routes
     path("api/apply/", apply_form),
     path("api/live-news/", live_news),
-   # Frontend catch-all (MUST BE LAST)
-    # re_path(r"^.*$", react_app),
+
 ]

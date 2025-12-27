@@ -123,3 +123,4 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+TEMPLATES[0]["DIRS"] = [BASE_DIR / "backend" / "templates"]
