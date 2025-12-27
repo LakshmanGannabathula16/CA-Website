@@ -8,9 +8,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET', 'change-this-secret')
 
-DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["https://ca-website-qj5u.onrender.com"]
+DEBUG = False
 
 INSTALLED_APPS = [
     'django.contrib.admin',
