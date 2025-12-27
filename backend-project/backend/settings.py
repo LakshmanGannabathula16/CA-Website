@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django_crontab',
     'corsheaders',
     'careers',
+
 ]
 CRONJOBS = [
     ('0 * * * *', 'your_app.cron.remove_old_dues'),  
