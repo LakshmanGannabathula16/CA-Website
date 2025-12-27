@@ -11,13 +11,16 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET', 'change-this-secret')
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    "ca-website-qj5u.onrender.com"
+    "ca-website-qj5u.onrender.com",
+    ".onrender.com",
+    "127.0.0.1",
+    "localhost"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://ca-website-qj5u.onrender.com"
+    "https://ca-website-qj5u.onrender.com",
+    "https://*.onrender.com"
 ]
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -91,9 +94,12 @@ USE_TZ = True
 
 
 STATIC_URL = "/static/"
+
 STATICFILES_DIRS = [
     BASE_DIR / "backend" / "static"
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
