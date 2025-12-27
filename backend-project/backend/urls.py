@@ -21,17 +21,13 @@ from careers.views import apply_form, live_news
 from django.views.generic import TemplateView
 from django.urls import re_path
 
-urlpatterns += [
-    re_path(r"^.*$", TemplateView.as_view(template_name="index.html")),
-]
-
-
-
-
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/apply/", apply_form),
     path("api/live-news/", live_news),
 
+    # 👇 put this LAST
+    re_path(r"^.*$", TemplateView.as_view(template_name="index.html")),
 ]
+
