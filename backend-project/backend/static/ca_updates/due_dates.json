@@ -1,0 +1,20 @@
+{
+    "due_dates": [
+        {
+            "date": "07 Dec 2025",
+            "title": "TDS deposit due"
+        },
+        {
+            "date": "11 Dec 2025",
+            "title": "GSTR-1 (monthly)"
+        },
+        {
+            "date": "20 Dec 2025",
+            "title": "GSTR-3B (monthly)"
+        },
+        {
+            "date": "30 Dec 2025",
+            "title": "PF/ESI monthly payment"
+        }
+    ]
+}
