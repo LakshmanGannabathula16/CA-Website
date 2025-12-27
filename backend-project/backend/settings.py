@@ -10,6 +10,9 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET', 'change-this-secret')
 
 
 ALLOWED_HOSTS = ["https://ca-website-qj5u.onrender.com"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://ca-website-qj5u.onrender.com"
+]
 DEBUG = False
 
 INSTALLED_APPS = [
