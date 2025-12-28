@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 export default function NewsUpdatesSection() {
 
-    const API_URL = "http://127.0.0.1:8000/api/live-news/";
+    const API_URL = "/api/live-news/";
 
     const [today, setToday] = useState([]);
     const [previous, setPrevious] = useState([]);
