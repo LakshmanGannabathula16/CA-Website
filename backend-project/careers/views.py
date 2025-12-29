@@ -194,7 +194,6 @@ def live_news(request):
     blogs = dedupe(blogs)
     due_dates = dedupe(due_dates)
 
-\
     def sort_key(x):
         try:
             return datetime.fromisoformat(x.get("parsed_dt") or "").timestamp()
@@ -254,17 +253,22 @@ def apply_form(request):
             <p><b>City:</b> {city}</p>
             <p><b>Message:</b> {message}</p>
             """
+mail = EmailMultiAlternatives(
+    subject=f"Contact Enquiry — {name}",
+    body="",
+    from_email=settings.DEFAULT_FROM_EMAIL,
+    to=[settings.HR_EMAIL],
+)
 
-            mail = EmailMultiAlternatives(
-                subject=f"Contact Enquiry — {name}",
-                body="",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[settings.HR_EMAIL],
-            )
-            mail.attach_alternative(html_body, "text/html")
-            mail.send()
+mail.attach_alternative(html_body, "text/html")
 
-            return JsonResponse({"ok": True, "message": "Contact message sent successfully"})
+try:
+    mail.send()
+except Exception as e:
+    print("EMAIL SEND ERROR:", e)
+
+return JsonResponse({"ok": True, "message": "Contact message received"})
+
 
 
         first_name = data.get("firstName", "")

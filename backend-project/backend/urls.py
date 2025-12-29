@@ -26,8 +26,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/apply/", apply_form),
     path("api/live-news/", live_news),
-
-    # 👇 put this LAST
     re_path(r"^.*$", TemplateView.as_view(template_name="index.html")),
 ]
 

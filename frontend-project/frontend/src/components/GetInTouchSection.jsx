@@ -79,9 +79,17 @@ export default function GetInTouchSection() {
                 method: "POST",
                 body: fd,
             });
-            const data = await res.json();
+            let data = null;
 
-            if (!data.ok) throw new Error(data.message || "Submission failed");
+            try {
+                data = await res.json();
+            } catch (e) {
+
+            }
+
+            if (!res.ok) {
+                throw new Error((data && data.message) || "Submission failed");
+            }
 
             setFormStatus("success");
             setFormMessage("✅ Message sent successfully!");
