@@ -13,7 +13,6 @@ export default function GetInTouchSection() {
     const [loading, setLoading] = useState(false);
     const [formMessage, setFormMessage] = useState("");
     const [formStatus, setFormStatus] = useState("");
-
     const [fieldError, setFieldError] = useState({});
 
     const update = (field, value) => {
@@ -22,10 +21,8 @@ export default function GetInTouchSection() {
         setFormMessage("");
     };
 
-
     const isValidEmail = (email) =>
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
 
     const isValidPhone = (phone) =>
         /^[6-9]\d{9}$/.test(phone);
@@ -35,18 +32,15 @@ export default function GetInTouchSection() {
         setFormMessage("");
         setFormStatus("");
 
-
         Object.keys(form).forEach((key) => {
             if (!form[key].trim()) errors[key] = true;
         });
-
 
         if (form.email && !isValidEmail(form.email)) {
             errors.email = true;
             setFormMessage("❌ Please enter a valid email address.");
             setFormStatus("error");
         }
-
 
         if (form.number && !isValidPhone(form.number)) {
             errors.number = true;
@@ -80,17 +74,17 @@ export default function GetInTouchSection() {
                 body: fd,
             });
 
-            const text = await res.text();
-
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch {
-                throw new Error("Server error — not valid JSON:\n" + text);
+            // 🔥 FIXED JSON / HTML issue here
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || "Server error. Please try again.");
             }
 
+            const data = await res.json();
 
-            if (!data.ok) throw new Error(data.message || "Submission failed");
+            if (!data.ok) {
+                throw new Error(data.message || "Submission failed");
+            }
 
             setFormStatus("success");
             setFormMessage("✅ Message sent successfully!");
@@ -128,7 +122,6 @@ export default function GetInTouchSection() {
             <div className="container mx-auto px-6 max-w-6xl">
                 <div className="bg-white rounded-xl shadow-lg border border-gray-300 grid md:grid-cols-2 overflow-hidden">
 
-
                     <div className="w-full h-[340px]">
                         <img
                             src={getInTouchImg}
@@ -137,9 +130,7 @@ export default function GetInTouchSection() {
                         />
                     </div>
 
-
                     <div className="w-full p-6">
-
 
                         <div className="grid grid-cols-2 gap-4">
                             <input
@@ -160,7 +151,6 @@ export default function GetInTouchSection() {
                   ${fieldError.number ? "border-red-500" : "border-gray-400"}`}
                             />
                         </div>
-
 
                         <input
                             type="email"
@@ -189,7 +179,6 @@ export default function GetInTouchSection() {
                 ${fieldError.message ? "border-red-500" : "border-gray-400"}`}
                         ></textarea>
 
-
                         <button
                             onClick={handleSubmit}
                             disabled={loading}
@@ -197,7 +186,6 @@ export default function GetInTouchSection() {
                         >
                             {loading ? "Sending..." : "Send Message"}
                         </button>
-
 
                         {formMessage && (
                             <p
