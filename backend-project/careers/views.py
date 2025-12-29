@@ -6,19 +6,17 @@ from django.core.mail import EmailMultiAlternatives
 import feedparser
 import requests
 from bs4 import BeautifulSoup
-import os
-import json
 import time
 import calendar
 from datetime import datetime, timezone
 
 
-# --------------- GLOBAL CACHE -----------------
+# ---------------- CACHE (LIVE NEWS) ----------------
 _LIVE_NEWS_CACHE = {"ts": 0, "data": None}
 _CACHE_TTL = 60 * 10   # 10 minutes
 
 
-# ---------------- HELPERS --------------------
+# ---------------- HELPERS ----------------
 def _try_parse_entry_date(entry):
     if not entry:
         return None
@@ -71,8 +69,10 @@ def _scrape_simple_list(url, selectors, source, limit=6):
             for el in soup.select(sel):
                 if len(out) >= limit:
                     return out
+
                 title = el.get_text(strip=True)
                 href = el.get("href") if el.name == "a" else ""
+
                 if title:
                     full = href if href.startswith("http") else url.rstrip("/") + "/" + href.lstrip("/")
                     out.append({
@@ -84,6 +84,7 @@ def _scrape_simple_list(url, selectors, source, limit=6):
                     })
     except Exception:
         pass
+
     return out
 
 
@@ -106,6 +107,7 @@ def _extract_due_dates(url, source, limit=4):
             for m in re.finditer(pat, txt, flags=re.IGNORECASE):
                 if len(out) >= limit:
                     return out
+
                 d = m.group(1)
                 if d not in found:
                     found.add(d)
@@ -129,14 +131,13 @@ def _normalize_item(title, date, source, link):
     }
 
 
-# ---------------- LIVE NEWS -------------------
+# ---------------- LIVE NEWS ----------------
 @csrf_exempt
 def live_news(request):
-
     global _LIVE_NEWS_CACHE
+
     now_ts = time.time()
 
-    # serve from cache
     if _LIVE_NEWS_CACHE["data"] and (now_ts - _LIVE_NEWS_CACHE["ts"] < _CACHE_TTL):
         return JsonResponse(_LIVE_NEWS_CACHE["data"])
 
@@ -186,6 +187,7 @@ def live_news(request):
 
         for i, item in enumerate(news):
             normalized = _normalize_item(item["title"], item.get("date", ""), item["source"], item.get("link", ""))
+
             if i < 6:
                 today.append(normalized)
             else:
@@ -215,7 +217,7 @@ def live_news(request):
         })
 
 
-# ---------------- APPLY / CONTACT FORM -------------------
+# ---------------- APPLY / CONTACT FORM ----------------
 @csrf_exempt
 def apply_form(request):
     if request.method != "POST":
@@ -225,7 +227,7 @@ def apply_form(request):
         data = request.POST
         form_type = data.get("formType", "application")
 
-        # -------- CONTACT FORM --------
+        # ---------- CONTACT FORM ----------
         if form_type == "contact":
             name = data.get("name", "")
             number = data.get("number", "")
@@ -233,7 +235,6 @@ def apply_form(request):
             city = data.get("city", "")
             message = data.get("message", "")
 
-            # ⭐ DO NOT TOUCH — YOUR HTML BODY REMAINS SAME
             html_body = f"""
 <div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
   <table align='center' width='600' cellpadding='0' cellspacing='0'
@@ -291,6 +292,7 @@ def apply_form(request):
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 to=[settings.HR_EMAIL],
             )
+
             mail.attach_alternative(html_body, "text/html")
 
             try:
@@ -300,7 +302,7 @@ def apply_form(request):
 
             return JsonResponse({"ok": True, "message": "Contact message received"})
 
-        # -------- JOB APPLICATION --------
+        # ---------- JOB APPLICATION ----------
         first_name = data.get("firstName", "")
         last_name = data.get("lastName", "")
         email = data.get("email", "")
