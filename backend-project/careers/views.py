@@ -243,7 +243,7 @@ def apply_form(request):
             city = data.get("city", "")
             message = data.get("message", "")
 
-                html_body = f"""
+            html_body = f"""
 <div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
 
   <table align='center' width='600' cellpadding='0' cellspacing='0'
@@ -375,3 +375,4 @@ def apply_form(request):
 
     except Exception as e:
         return JsonResponse({"ok": False, "message": "Server error: " + str(e)}, status=500)
+
