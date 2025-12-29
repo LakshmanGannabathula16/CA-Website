@@ -225,7 +225,6 @@ def live_news(request):
     _LIVE_NEWS_CACHE["data"] = final
 
     return JsonResponse(final)
-    
 @csrf_exempt
 def apply_form(request):
     if request.method != "POST":
@@ -245,39 +244,19 @@ def apply_form(request):
 
             html_body = f"""
 <div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
-
   <table align='center' width='600' cellpadding='0' cellspacing='0'
-         style='background:#ffffff; border-radius:10px; border:1px solid #d7dce2;
-                box-shadow:0 2px 8px rgba(0,0,0,0.08);'>
+         style='background:#ffffff; border-radius:10px; border:1px solid #d7dce2; box-shadow:0 2px 8px rgba(0,0,0,0.08);'>
 
     <tr>
-      <td style="background:#0A1A44; padding:28px 20px; color:#fff;
-                 border-radius:10px 10px 0 0; text-align:center;">
-
-        <table align="center" cellpadding="0" cellspacing="0"
-               style="margin:0 auto; text-align:center;">
-          <tr>
-            <td align="right" valign="middle" style="padding-right:12px;">
-              <img src="cid:firmlogo" alt="Firm Logo" style="width:65px; height:auto; display:block;">
-            </td>
-            <td align="left" valign="middle">
-              <div style="font-size:22px; font-weight:700; margin-bottom:2px;">
-                Pavan Kalyan & Associates
-              </div>
-              <div style="font-size:14px; opacity:0.85;">
-                Chartered Accountants
-              </div>
-            </td>
-          </tr>
-        </table>
-
+      <td style="background:#0A1A44; padding:28px 20px; color:#fff; border-radius:10px 10px 0 0; text-align:center;">
+        <div style="font-size:22px; font-weight:700;">Pavan Kalyan & Associates</div>
+        <div style="font-size:14px; opacity:0.85;">Chartered Accountants</div>
       </td>
     </tr>
 
     <tr>
       <td style='padding:24px;'>
-
-        <h3 style='font-size:16px; color:#0A1A44; margin:0 0 8px 0;'>Contact Enquiry</h3>
+        <h3 style='font-size:16px; color:#0A1A44;'>Contact Enquiry</h3>
 
         <table width='100%' style='font-size:15px; line-height:1.45;'>
           <tr><td><b>Name:</b></td><td>{name}</td></tr>
@@ -286,20 +265,17 @@ def apply_form(request):
           <tr><td><b>City:</b></td><td>{city}</td></tr>
           <tr><td><b>Message:</b></td><td>{message}</td></tr>
         </table>
-
       </td>
     </tr>
 
     <tr>
-      <td style='background:#f1f3f7; padding:14px; text-align:center; font-size:13px;
-                 color:#555; border-top:1px solid #d8dce2; border-radius:0 0 10px 10px;'>
+      <td style='background:#f1f3f7; padding:14px; text-align:center; font-size:13px; color:#555; border-top:1px solid #d8dce2;'>
         Sent to HR Email: {settings.HR_EMAIL}<br>
         © Pavan Kalyan & Associates — Chartered Accountants
       </td>
     </tr>
 
   </table>
-
 </div>
 """
 
@@ -322,11 +298,11 @@ def apply_form(request):
         # ---------------- JOB APPLICATION ----------------
         first_name = data.get("firstName", "")
         last_name = data.get("lastName", "")
-        email = data.get("email", "")
+        job_email = data.get("email", "")
         mobile = data.get("mobile", "")
         position = data.get("position", "")
 
-        if not all([first_name, last_name, email, mobile, position]):
+        if not all([first_name, last_name, job_email, mobile, position]):
             return JsonResponse({"ok": False, "message": "Missing required fields"}, status=400)
 
         resume = request.FILES.get("resume")
