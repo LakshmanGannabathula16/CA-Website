@@ -79,17 +79,18 @@ export default function GetInTouchSection() {
                 method: "POST",
                 body: fd,
             });
-            let data = null;
 
+            const text = await res.text();
+
+            let data;
             try {
-                data = await res.json();
-            } catch (e) {
-
+                data = JSON.parse(text);
+            } catch {
+                throw new Error("Server error — not valid JSON:\n" + text);
             }
 
-            if (!res.ok) {
-                throw new Error((data && data.message) || "Submission failed");
-            }
+
+            if (!data.ok) throw new Error(data.message || "Submission failed");
 
             setFormStatus("success");
             setFormMessage("✅ Message sent successfully!");

@@ -226,8 +226,6 @@ def live_news(request):
 
     return JsonResponse(final)
 
-
-
 @csrf_exempt
 def apply_form(request):
     if request.method != "POST":
