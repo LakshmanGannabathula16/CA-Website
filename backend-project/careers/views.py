@@ -235,7 +235,7 @@ def apply_form(request):
         data = request.POST
         form_type = data.get("formType", "application")
 
-    
+        # -------- CONTACT FORM --------
         if form_type == "contact":
             name = data.get("name", "")
             number = data.get("number", "")
@@ -243,53 +243,7 @@ def apply_form(request):
             city = data.get("city", "")
             message = data.get("message", "")
 
-            html_body = f"""
-            <h2>New Contact Enquiry</h2>
-            <p><b>Name:</b> {name}</p>
-            <p><b>Email:</b> {email}</p>
-            <p><b>Number:</b> {number}</p>
-            <p><b>City:</b> {city}</p>
-            <p><b>Message:</b> {message}</p>
-            """
-mail = EmailMultiAlternatives(
-    subject=f"Contact Enquiry — {name}",
-    body="",
-    from_email=settings.DEFAULT_FROM_EMAIL,
-    to=[settings.HR_EMAIL],
-)
-
-mail.attach_alternative(html_body, "text/html")
-
-try:
-    mail.send()
-except Exception as e:
-    print("EMAIL SEND ERROR:", e)
-
-return JsonResponse({"ok": True, "message": "Contact message received"})
-
-
-
-        first_name = data.get("firstName", "")
-        last_name = data.get("lastName", "")
-        email = data.get("email", "")
-        mobile = data.get("mobile", "")
-        position = data.get("position", "")
-
-        if not all([first_name, last_name, email, mobile, position]):
-            return JsonResponse({"ok": False, "message": "Missing required fields"}, status=400)
-
-        gender = data.get("gender", "")
-        dob = data.get("dob", "")
-        qualification = data.get("qualification", "")
-        last_company = data.get("lastCompany", "")
-        exp_years = data.get("experienceYear", "")
-        exp_months = data.get("experienceMonth", "")
-        portfolio = data.get("portfolio", "")
-        comments = data.get("comments", "")
-        resume = request.FILES.get("resume")
-
-     
-        html_body = f"""
+                html_body = f"""
 <div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
 
   <table align='center' width='600' cellpadding='0' cellspacing='0'
@@ -374,26 +328,48 @@ return JsonResponse({"ok": True, "message": "Contact message received"})
 </div>
 """
 
+            mail = EmailMultiAlternatives(
+                subject=f"Contact Enquiry — {name}",
+                body="",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[settings.HR_EMAIL],
+            )
+
+            mail.attach_alternative(html_body, "text/html")
+
+            try:
+                mail.send()
+            except Exception as e:
+                print("EMAIL SEND ERROR:", e)
+
+            return JsonResponse({"ok": True, "message": "Contact message received"})
+
+        # -------- JOB APPLICATION --------
+        first_name = data.get("firstName", "")
+        last_name = data.get("lastName", "")
+        email = data.get("email", "")
+        mobile = data.get("mobile", "")
+        position = data.get("position", "")
+
+        if not all([first_name, last_name, email, mobile, position]):
+            return JsonResponse({"ok": False, "message": "Missing required fields"}, status=400)
+
+        resume = request.FILES.get("resume")
+
         mail = EmailMultiAlternatives(
             subject=f"Job Application — {first_name} {last_name}",
             body="",
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[settings.HR_EMAIL],
         )
-        mail.attach_alternative(html_body, "text/html")
-
-        logo_path = os.path.join(settings.BASE_DIR, "backend/static/ca-logo.png")
-        if os.path.exists(logo_path):
-            with open(logo_path, "rb") as f:
-                logo = MIMEImage(f.read())
-                logo.add_header("Content-ID", "<firmlogo>")
-                logo.add_header("Content-Disposition", "inline", filename="ca-logo.png")
-                mail.attach(logo)
 
         if resume:
             mail.attach(resume.name, resume.read(), resume.content_type)
 
-        mail.send()
+        try:
+            mail.send()
+        except Exception as e:
+            print("EMAIL SEND ERROR:", e)
 
         return JsonResponse({"ok": True, "message": "Application sent successfully"})
 
