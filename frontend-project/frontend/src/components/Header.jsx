@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import caLogo from "../assets/ca1.png";
-import {
-    FaLinkedin,
-    FaWhatsapp,
-    FaInstagram,
-    FaFacebook
-} from "react-icons/fa";
+import { FaLinkedin, FaWhatsapp, FaInstagram, FaFacebook } from "react-icons/fa";
 
 export default function Header() {
     const [scrolled, setScrolled] = useState(false);
@@ -25,23 +20,18 @@ export default function Header() {
 
     useEffect(() => {
         if (isHome) setScrolled(window.scrollY > 50);
-    }, [location.pathname]);
+    }, [location.pathname, isHome]);
 
     return (
         <>
             <header
                 className={`
           fixed inset-x-0 top-0 z-50 transition-all duration-300 shadow-lg
-          ${isHome
-                        ? scrolled
-                            ? "bg-[#0b2447]"
-                            : "bg-transparent"
-                        : "bg-[#0b2447]"
-                    }
+          ${isHome ? (scrolled ? "bg-[#0b2447]" : "bg-transparent") : "bg-[#0b2447]"}
         `}
             >
                 <div className="w-full mx-auto px-6 py-4 flex items-center justify-between">
-                    {/* Logo + Title */}
+                    {/* Logo */}
                     <div className="flex items-center gap-4">
                         <img
                             src={caLogo}
@@ -56,31 +46,28 @@ export default function Header() {
                         </div>
                     </div>
 
-                    {/* Desktop Menu */}
+                    {/* DESKTOP MENU */}
                     <nav className="hidden md:flex gap-8 items-center text-white text-lg font-medium">
-                        {[
-                            { label: "Home", to: "/" },
-                            { label: "About", to: "/about" },
-                            { label: "Team", to: "/team" },
-                            { label: "Careers", to: "/careers" },
-                            { label: "Contact Us", to: "/contact" }
-                        ].map((link) => (
-                            <NavLink
-                                key={link.to}
-                                to={link.to}
-                                className={({ isActive }) =>
-                                    `
-                    transition
-                    ${isActive ? "text-pkred" : "text-white"}
-                    hover:text-blue-400
-                  `
-                                }
-                            >
-                                {link.label}
-                            </NavLink>
-                        ))}
 
-                        {/* Desktop Services dropdown */}
+                        <NavLink
+                            to="/"
+                            className={({ isActive }) =>
+                                `${isActive ? "text-pkred" : "text-white"} hover:text-blue-400`
+                            }
+                        >
+                            Home
+                        </NavLink>
+
+                        <NavLink
+                            to="/about"
+                            className={({ isActive }) =>
+                                `${isActive ? "text-pkred" : "text-white"} hover:text-blue-400`
+                            }
+                        >
+                            About
+                        </NavLink>
+
+                        {/* SERVICES DROPDOWN */}
                         <div className="relative group">
                             <span className="cursor-pointer hover:text-blue-400 flex items-center gap-1">
                                 Services ▾
@@ -117,14 +104,12 @@ export default function Header() {
                                             key={index}
                                             to={url}
                                             className={({ isActive }) =>
-                                                `
-                          block px-4 py-2 text-sm whitespace-nowrap transition
-                          ${isActive
+                                                `block px-4 py-2 text-sm whitespace-nowrap transition
+                        ${isActive
                                                     ? "bg-gray-100 text-[#0b2447] font-semibold pl-6 border-l-4 border-blue-400"
                                                     : "text-gray-700 pl-4"
                                                 }
-                          hover:text-blue-400 hover:bg-gray-100
-                        `
+                        hover:text-blue-400 hover:bg-gray-100`
                                             }
                                         >
                                             {item}
@@ -133,9 +118,37 @@ export default function Header() {
                                 })}
                             </div>
                         </div>
+
+                        {/* TEAM — AFTER SERVICES */}
+                        <NavLink
+                            to="/team"
+                            className={({ isActive }) =>
+                                `${isActive ? "text-pkred" : "text-white"} hover:text-blue-400`
+                            }
+                        >
+                            Team
+                        </NavLink>
+
+                        <NavLink
+                            to="/careers"
+                            className={({ isActive }) =>
+                                `${isActive ? "text-pkred" : "text-white"} hover:text-blue-400`
+                            }
+                        >
+                            Careers
+                        </NavLink>
+
+                        <NavLink
+                            to="/contact"
+                            className={({ isActive }) =>
+                                `${isActive ? "text-pkred" : "text-white"} hover:text-blue-400`
+                            }
+                        >
+                            Contact Us
+                        </NavLink>
                     </nav>
 
-                    {/* Mobile Menu Button */}
+                    {/* MOBILE BUTTON */}
                     <div
                         className="md:hidden text-white text-3xl cursor-pointer"
                         onClick={() => setOpen(true)}
@@ -145,7 +158,7 @@ export default function Header() {
                 </div>
             </header>
 
-            {/* Mobile Sidebar */}
+            {/* MOBILE SIDEBAR */}
             <div
                 className={`
           fixed inset-0 z-50 bg-black/50 backdrop-blur-sm
@@ -165,36 +178,21 @@ export default function Header() {
                 >
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-white text-xl font-semibold">Menu</h2>
-                        <button
-                            onClick={() => setOpen(false)}
-                            className="text-white text-2xl"
-                        >
+                        <button onClick={() => setOpen(false)} className="text-white text-2xl">
                             ✕
                         </button>
                     </div>
 
-                    {/* Scrollable Navigation */}
                     <nav className="flex flex-col gap-4 text-white text-lg overflow-y-auto max-h-[85vh] pr-2">
-                        {[
-                            { label: "Home", to: "/" },
-                            { label: "About", to: "/about" },
-                            { label: "Team", to: "/team" }
-                        ].map((link) => (
-                            <NavLink
-                                key={link.to}
-                                to={link.to}
-                                onClick={() => setOpen(false)}
-                                className="transition hover:text-blue-400 active:text-blue-300"
-                            >
-                                {link.label}
-                            </NavLink>
-                        ))}
 
-                        {/* SERVICES COLLAPSIBLE */}
+                        <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
+                        <NavLink to="/about" onClick={() => setOpen(false)}>About</NavLink>
+
+                        {/* MOBILE SERVICES */}
                         <div className="border-t border-white/10 pt-2">
                             <button
                                 onClick={() => setOpenServices(!openServices)}
-                                className="w-full flex justify-between items-center text-left text-white transition hover:text-blue-400 py-2"
+                                className="w-full flex justify-between items-center py-2"
                             >
                                 <span>Services</span>
                                 <span>{openServices ? "▴" : "▾"}</span>
@@ -224,7 +222,7 @@ export default function Header() {
                                                 key={i}
                                                 to={url}
                                                 onClick={() => setOpen(false)}
-                                                className="block text-sm py-2 px-2 rounded transition hover:bg-white/10 hover:text-blue-400 active:text-blue-300"
+                                                className="block text-sm py-2 px-2 rounded hover:bg-white/10"
                                             >
                                                 {item}
                                             </NavLink>
@@ -234,57 +232,18 @@ export default function Header() {
                             )}
                         </div>
 
-                        {[
-                            { label: "Careers", to: "/careers" },
-                            { label: "Contact Us", to: "/contact" }
-                        ].map((link) => (
-                            <NavLink
-                                key={link.to}
-                                to={link.to}
-                                onClick={() => setOpen(false)}
-                                className="transition hover:text-blue-400 active:text-blue-300"
-                            >
-                                {link.label}
-                            </NavLink>
-                        ))}
+                        {/* TEAM AFTER SERVICES */}
+                        <NavLink to="/team" onClick={() => setOpen(false)}>Team</NavLink>
 
-                        {/* SOCIAL ICONS — CENTERED */}
+                        <NavLink to="/careers" onClick={() => setOpen(false)}>Careers</NavLink>
+                        <NavLink to="/contact" onClick={() => setOpen(false)}>Contact Us</NavLink>
+
+                        {/* SOCIAL */}
                         <div className="mt-6 pt-4 border-t border-white/10 flex justify-center gap-4 text-xl">
-                            <a
-                                href="https://www.linkedin.com/in/pavan-kalyan-n-8aa907112/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-white transition hover:text-blue-400 active:text-blue-300"
-                            >
-                                <FaLinkedin />
-                            </a>
-
-                            <a
-                                href="https://www.instagram.com/thisiscapk?igsh=ZjVkZzV5enB3ZnJz"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-white transition hover:text-pink-400 active:text-pink-300"
-                            >
-                                <FaInstagram />
-                            </a>
-
-                            <a
-                                href="https://www.facebook.com/share/1Cabj8hhJ5/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-white transition hover:text-blue-500 active:text-blue-300"
-                            >
-                                <FaFacebook />
-                            </a>
-
-                            <a
-                                href="https://wa.me/919590150805"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-white transition hover:text-green-400 active:text-green-300"
-                            >
-                                <FaWhatsapp />
-                            </a>
+                            <a href="https://www.linkedin.com/in/pavan-kalyan-n-8aa907112/" target="_blank" rel="noreferrer"><FaLinkedin /></a>
+                            <a href="https://www.instagram.com/thisiscapk" target="_blank" rel="noreferrer"><FaInstagram /></a>
+                            <a href="https://www.facebook.com/share/1Cabj8hhJ5/" target="_blank" rel="noreferrer"><FaFacebook /></a>
+                            <a href="https://wa.me/919590150805" target="_blank" rel="noreferrer"><FaWhatsapp /></a>
                         </div>
                     </nav>
                 </div>
@@ -292,3 +251,4 @@ export default function Header() {
         </>
     );
 }
+
