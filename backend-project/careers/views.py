@@ -2,22 +2,26 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
+from email.mime.image import MIMEImage
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 import feedparser
 import requests
 from bs4 import BeautifulSoup
+import os
+import json
 import time
 import calendar
 from datetime import datetime, timezone
 
 
-# ---------------- CACHE (LIVE NEWS) ----------------
 _LIVE_NEWS_CACHE = {"ts": 0, "data": None}
-_CACHE_TTL = 60 * 10   # 10 minutes
+_CACHE_TTL = 60 * 10  
 
 
-# ---------------- HELPERS ----------------
 def _try_parse_entry_date(entry):
+    """Attempts to get a proper datetime from an RSS entry."""
     if not entry:
         return None
 
@@ -28,6 +32,7 @@ def _try_parse_entry_date(entry):
             return datetime.fromtimestamp(ts, tz=timezone.utc)
         except Exception:
             pass
+
 
     s = entry.get("published") or entry.get("updated") or entry.get("pubDate") or ""
     if s:
@@ -41,7 +46,8 @@ def _try_parse_entry_date(entry):
     return None
 
 
-def _parse_feed(url, source, limit=8):
+def _parse_feed(url, source, limit=10):
+    """Fetch RSS feed items."""
     out = []
     try:
         feed = feedparser.parse(url)
@@ -59,7 +65,8 @@ def _parse_feed(url, source, limit=8):
     return out
 
 
-def _scrape_simple_list(url, selectors, source, limit=6):
+def _scrape_simple_list(url, selectors, source, limit=8):
+    """Scrape websites like TaxScan / CBIC."""
     out = []
     try:
         r = requests.get(url, timeout=8, headers={"User-Agent": "Mozilla/5.0"})
@@ -69,10 +76,8 @@ def _scrape_simple_list(url, selectors, source, limit=6):
             for el in soup.select(sel):
                 if len(out) >= limit:
                     return out
-
                 title = el.get_text(strip=True)
                 href = el.get("href") if el.name == "a" else ""
-
                 if title:
                     full = href if href.startswith("http") else url.rstrip("/") + "/" + href.lstrip("/")
                     out.append({
@@ -84,11 +89,11 @@ def _scrape_simple_list(url, selectors, source, limit=6):
                     })
     except Exception:
         pass
-
     return out
 
 
-def _extract_due_dates(url, source, limit=4):
+def _extract_due_dates(url, source, limit=6):
+    """Regex-based extraction of date-like strings from CA/GST/IT pages."""
     import re
     out = []
     try:
@@ -107,7 +112,6 @@ def _extract_due_dates(url, source, limit=4):
             for m in re.finditer(pat, txt, flags=re.IGNORECASE):
                 if len(out) >= limit:
                     return out
-
                 d = m.group(1)
                 if d not in found:
                     found.add(d)
@@ -131,95 +135,100 @@ def _normalize_item(title, date, source, link):
     }
 
 
-# ---------------- LIVE NEWS ----------------
 @csrf_exempt
 def live_news(request):
-    global _LIVE_NEWS_CACHE
+    """
+    FINAL AUTOMATIC VERSION
+    Returns:
+    {
+      ok: True,
+      today: [...],
+      previous: [...],
+      blogs: [...],
+      due_dates: [...]
+    }
+    """
 
     now_ts = time.time()
 
-    if _LIVE_NEWS_CACHE["data"] and (now_ts - _LIVE_NEWS_CACHE["ts"] < _CACHE_TTL):
+
+    if (
+        _LIVE_NEWS_CACHE["data"]
+        and now_ts - _LIVE_NEWS_CACHE["ts"] < _CACHE_TTL
+    ):
         return JsonResponse(_LIVE_NEWS_CACHE["data"])
 
-    try:
-        news = []
-        blogs = []
-        due_dates = []
-
-        news += _parse_feed("https://taxguru.in/feed", "TaxGuru", limit=8)
-        news += _parse_feed("https://www.mca.gov.in/bin/mca/rss-feed.xml", "MCA", limit=5)
-
-        blogs += _parse_feed("https://www.caknowledge.com/feed", "CAknowledge", limit=6)
-
-        news += _scrape_simple_list(
-            "https://cbic-gst.gov.in/news.html",
-            [".listing li a"],
-            "CBIC/GST",
-            limit=6
-        )
-
-        due_dates += _extract_due_dates("https://cbic-gst.gov.in/news.html", "CBIC/GST", limit=4)
-
-        def dedupe(arr):
-            seen = set()
-            out = []
-            for it in arr:
-                key = it.get("title", "").lower().strip()
-                if key and key not in seen:
-                    seen.add(key)
-                    out.append(it)
-            return out
-
-        news = dedupe(news)
-        blogs = dedupe(blogs)
-        due_dates = dedupe(due_dates)
-
-        def sort_key(x):
-            try:
-                return datetime.fromisoformat(x.get("parsed_dt") or "").timestamp()
-            except:
-                return 0
-
-        news.sort(key=sort_key, reverse=True)
-
-        today = []
-        previous = []
-
-        for i, item in enumerate(news):
-            normalized = _normalize_item(item["title"], item.get("date", ""), item["source"], item.get("link", ""))
-
-            if i < 6:
-                today.append(normalized)
-            else:
-                previous.append(normalized)
-
-        final = {
-            "ok": True,
-            "today": today,
-            "previous": previous[:20],
-            "blogs": blogs[:8],
-            "due_dates": due_dates[:8],
-        }
-
-        _LIVE_NEWS_CACHE["ts"] = time.time()
-        _LIVE_NEWS_CACHE["data"] = final
-
-        return JsonResponse(final)
-
-    except Exception as e:
-        return JsonResponse({
-            "ok": True,
-            "today": [],
-            "previous": [],
-            "blogs": [],
-            "due_dates": [],
-            "error": str(e),
-        })
+    news = []
+    blogs = []
+    due_dates = []
+    news += _parse_feed("https://taxguru.in/feed", "TaxGuru", limit=12)
+    news += _parse_feed("https://www.mca.gov.in/bin/mca/rss-feed.xml", "MCA", limit=8)
+    news += _parse_feed("https://incometaxindia.gov.in/_layouts/15/dit/TaxNewsHandler.ashx", "IncomeTax", limit=8)
 
 
-# ---------------- APPLY / CONTACT FORM ----------------
+    blogs += _parse_feed("https://www.caknowledge.com/feed", "CAknowledge", limit=10)
+    blogs += _scrape_simple_list("https://taxscan.in/category/gst/", ["h2.entry-title a"], "TaxScan", limit=10)
+
+    news += _scrape_simple_list("https://cbic-gst.gov.in/news.html",
+                                [".listing li a", ".news-list a"],
+                                "CBIC/GST",
+                                limit=12)
+
+  
+    due_dates += _extract_due_dates("https://cbic-gst.gov.in/news.html", "CBIC/GST")
+    due_dates += _extract_due_dates("https://incometaxindia.gov.in", "IncomeTax")
+    due_dates += _extract_due_dates("https://taxguru.in", "TaxGuru")
+
+   
+    def dedupe(arr):
+        seen = set()
+        out = []
+        for it in arr:
+            key = it.get("title", "").lower().strip()
+            if key and key not in seen:
+                seen.add(key)
+                out.append(it)
+        return out
+
+    news = dedupe(news)
+    blogs = dedupe(blogs)
+    due_dates = dedupe(due_dates)
+
+    def sort_key(x):
+        try:
+            return datetime.fromisoformat(x.get("parsed_dt") or "").timestamp()
+        except:
+            return 0
+
+    news.sort(key=sort_key, reverse=True)
+
+    today = []
+    previous = []
+
+    for i, item in enumerate(news):
+        normalized = _normalize_item(item["title"], item.get("date", ""), item["source"], item.get("link", ""))
+        if i < 6:
+            today.append(normalized)
+        else:
+            previous.append(normalized)
+
+    final = {
+        "ok": True,
+        "today": today,
+        "previous": previous[:40],
+        "blogs": blogs[:12],
+        "due_dates": due_dates[:12],
+    }
+
+
+    _LIVE_NEWS_CACHE["ts"] = time.time()
+    _LIVE_NEWS_CACHE["data"] = final
+
+    return JsonResponse(final)
+    
 @csrf_exempt
 def apply_form(request):
+
     if request.method != "POST":
         return JsonResponse({"ok": False, "message": "Invalid request method"}, status=405)
 
@@ -227,22 +236,30 @@ def apply_form(request):
         data = request.POST
         form_type = data.get("formType", "application")
 
-        # ---------- CONTACT FORM ----------
+        # ---------------- CONTACT FORM ----------------
         if form_type == "contact":
+
             name = data.get("name", "")
             number = data.get("number", "")
             email = data.get("email", "")
             city = data.get("city", "")
             message = data.get("message", "")
 
+            if not name or not email:
+                return JsonResponse({"ok": False, "message": "Name and Email required"}, status=400)
+
+            # ⭐ YOUR SAME HTML BODY — NOT CHANGED ⭐
             html_body = f"""
 <div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
+
   <table align='center' width='600' cellpadding='0' cellspacing='0'
          style='background:#ffffff; border-radius:10px; border:1px solid #d7dce2;
                 box-shadow:0 2px 8px rgba(0,0,0,0.08);'>
+
     <tr>
       <td style="background:#0A1A44; padding:28px 20px; color:#fff;
                  border-radius:10px 10px 0 0; text-align:center;">
+
         <table align="center" cellpadding="0" cellspacing="0"
                style="margin:0 auto; text-align:center;">
           <tr>
@@ -259,12 +276,15 @@ def apply_form(request):
             </td>
           </tr>
         </table>
+
       </td>
     </tr>
 
     <tr>
       <td style='padding:24px;'>
+
         <h3 style='font-size:16px; color:#0A1A44; margin:0 0 8px 0;'>Contact Enquiry</h3>
+
         <table width='100%' style='font-size:15px; line-height:1.45;'>
           <tr><td><b>Name:</b></td><td>{name}</td></tr>
           <tr><td><b>Email:</b></td><td>{email}</td></tr>
@@ -272,6 +292,7 @@ def apply_form(request):
           <tr><td><b>City:</b></td><td>{city}</td></tr>
           <tr><td><b>Message:</b></td><td>{message}</td></tr>
         </table>
+
       </td>
     </tr>
 
@@ -282,58 +303,60 @@ def apply_form(request):
         © Pavan Kalyan & Associates — Chartered Accountants
       </td>
     </tr>
+
   </table>
+
 </div>
 """
 
-            mail = EmailMultiAlternatives(
-                subject=f"Contact Enquiry — {name}",
-                body="",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[settings.HR_EMAIL],
-            )
-
-            mail.attach_alternative(html_body, "text/html")
-
+            # ---- SAFE EMAIL SEND (never crashes server)
             try:
+                mail = EmailMultiAlternatives(
+                    subject=f"Contact Enquiry — {name}",
+                    body="",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[settings.HR_EMAIL],
+                )
+
+                mail.attach_alternative(html_body, "text/html")
                 mail.send()
+
             except Exception as e:
-                print("EMAIL SEND ERROR:", e)
+                print("CONTACT EMAIL ERROR:", e)
 
             return JsonResponse({"ok": True, "message": "Contact message received"})
 
-        # ---------- JOB APPLICATION ----------
-        first_name = data.get("firstName", "")
-        last_name = data.get("lastName", "")
+
+        # ---------------- JOB APPLICATION ----------------
+        first = data.get("firstName", "")
+        last = data.get("lastName", "")
         email = data.get("email", "")
         mobile = data.get("mobile", "")
         position = data.get("position", "")
 
-        if not all([first_name, last_name, email, mobile, position]):
+        if not all([first, last, email, mobile, position]):
             return JsonResponse({"ok": False, "message": "Missing required fields"}, status=400)
 
         resume = request.FILES.get("resume")
 
-        mail = EmailMultiAlternatives(
-            subject=f"Job Application — {first_name} {last_name}",
-            body="",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[settings.HR_EMAIL],
-        )
-
-        if resume:
-            mail.attach(resume.name, resume.read(), resume.content_type)
-
         try:
+            mail = EmailMultiAlternatives(
+                subject=f"Job Application — {first} {last}",
+                body=f"Position: {position}\nMobile: {mobile}\nEmail: {email}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[settings.HR_EMAIL],
+            )
+
+            if resume:
+                mail.attach(resume.name, resume.read(), resume.content_type)
+
             mail.send()
+
         except Exception as e:
-            print("EMAIL SEND ERROR:", e)
+            print("JOB EMAIL ERROR:", e)
 
         return JsonResponse({"ok": True, "message": "Application sent successfully"})
 
     except Exception as e:
         print("APPLY_FORM ERROR:", e)
-        return JsonResponse({
-            "ok": False,
-            "message": "Something went wrong — but server is OK."
-        })
+        return JsonResponse({"ok": False, "message": "Server error"}, status=500)
