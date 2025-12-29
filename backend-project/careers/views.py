@@ -235,11 +235,26 @@ def apply_form(request):
         data = request.POST
         form_type = data.get("formType", "application")
 
+        # 🔹 Define all variables first (so HTML can use them safely)
+        first_name = data.get("firstName", "")
+        last_name = data.get("lastName", "")
+        email = data.get("email", "")
+        mobile = data.get("number", data.get("mobile", ""))
+        gender = data.get("gender", "")
+        dob = data.get("dob", "")
+        position = data.get("position", "")
+        qualification = data.get("qualification", "")
+        last_company = data.get("lastCompany", "")
+        exp_years = data.get("experienceYear", "")
+        exp_months = data.get("experienceMonth", "")
+        portfolio = data.get("portfolio", "")
+        comments = data.get("comments", "")
+
+        resume = request.FILES.get("resume")
+
         # -------- CONTACT FORM --------
         if form_type == "contact":
             name = data.get("name", "")
-            number = data.get("number", "")
-            email = data.get("email", "")
             city = data.get("city", "")
             message = data.get("message", "")
 
@@ -289,17 +304,6 @@ def apply_form(request):
 
         <hr style='border:0; border-top:1px solid #e5e7ec; margin:16px 0;'>
 
-        <h3 style='font-size:16px; color:#0A1A44; margin:0 0 8px 0;'>Professional Details</h3>
-
-        <table width='100%' style='font-size:15px; line-height:1.45;'>
-          <tr><td><b>Position:</b></td><td>{position}</td></tr>
-          <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
-          <tr><td><b>Last Company:</b></td><td>{last_company or "—"}</td></tr>
-          <tr><td><b>Experience:</b></td><td>{exp_years} Years {exp_months} Months</td></tr>
-        </table>
-
-        <hr style='border:0; border-top:1px solid #e5e7ec; margin:16px 0;'>
-
         <h3 style='font-size:16px; color:#0A1A44; margin:0 0 8px 0;'>Additional Information</h3>
 
         <table width='100%' style='font-size:15px; line-height:1.35;'>
@@ -309,7 +313,7 @@ def apply_form(request):
 
         <div style='margin-top:18px; background:#0A1A44; color:#fff; padding:12px;
                     border-radius:6px; text-align:center; font-size:15px;'>
-            The applicant’s resume is attached with this email.
+            Contact form enquiry received.
         </div>
 
       </td>
@@ -345,17 +349,6 @@ def apply_form(request):
             return JsonResponse({"ok": True, "message": "Contact message received"})
 
         # -------- JOB APPLICATION --------
-        first_name = data.get("firstName", "")
-        last_name = data.get("lastName", "")
-        email = data.get("email", "")
-        mobile = data.get("mobile", "")
-        position = data.get("position", "")
-
-        if not all([first_name, last_name, email, mobile, position]):
-            return JsonResponse({"ok": False, "message": "Missing required fields"}, status=400)
-
-        resume = request.FILES.get("resume")
-
         mail = EmailMultiAlternatives(
             subject=f"Job Application — {first_name} {last_name}",
             body="",
@@ -375,4 +368,3 @@ def apply_form(request):
 
     except Exception as e:
         return JsonResponse({"ok": False, "message": "Server error: " + str(e)}, status=500)
-
