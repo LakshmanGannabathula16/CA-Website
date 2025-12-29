@@ -74,7 +74,7 @@ export default function GetInTouchSection() {
                 body: fd,
             });
 
-            // 🔥 FIXED JSON / HTML issue here
+
             if (!res.ok) {
                 const text = await res.text();
                 throw new Error(text || "Server error. Please try again.");
