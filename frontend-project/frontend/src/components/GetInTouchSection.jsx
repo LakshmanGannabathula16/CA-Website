@@ -75,10 +75,13 @@ export default function GetInTouchSection() {
             fd.append("city", form.city);
             fd.append("message", form.message);
 
-            const res = await fetch("http://localhost:8000/api/apply/", {
-                method: "POST",
-                body: fd,
-            });
+            const res = await fetch(
+                "https://ca-website-qj5u.onrender.com/api/apply/",
+                {
+                    method: "POST",
+                    body: fd,
+                }
+            );
 
             const data = await res.json();
 
