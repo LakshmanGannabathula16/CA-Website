@@ -225,6 +225,7 @@ def live_news(request):
     _LIVE_NEWS_CACHE["data"] = final
 
     return JsonResponse(final)
+    
 @csrf_exempt
 def apply_form(request):
     if request.method != "POST":
@@ -242,8 +243,7 @@ def apply_form(request):
             city = data.get("city", "")
             message = data.get("message", "")
 
-            
- html_body = f"""
+            html_body = f"""
 <div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
 
   <table align='center' width='600' cellpadding='0' cellspacing='0'
@@ -277,29 +277,15 @@ def apply_form(request):
     <tr>
       <td style='padding:24px;'>
 
-        <h3 style='font-size:16px; color:#0A1A44; margin:0 0 8px 0;'>Personal Details</h3>
+        <h3 style='font-size:16px; color:#0A1A44; margin:0 0 8px 0;'>Contact Enquiry</h3>
 
         <table width='100%' style='font-size:15px; line-height:1.45;'>
-          <tr><td><b>Name:</b></td><td>{first_name} {last_name}</td></tr>
+          <tr><td><b>Name:</b></td><td>{name}</td></tr>
           <tr><td><b>Email:</b></td><td>{email}</td></tr>
-          <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
-          <tr><td><b>Gender:</b></td><td>{gender}</td></tr>
-          <tr><td><b>Date of Birth:</b></td><td>{dob}</td></tr>
+          <tr><td><b>Mobile:</b></td><td>{number}</td></tr>
+          <tr><td><b>City:</b></td><td>{city}</td></tr>
+          <tr><td><b>Message:</b></td><td>{message}</td></tr>
         </table>
-
-        <hr style='border:0; border-top:1px solid #e5e7ec; margin:16px 0;'>
-
-        <h3 style='font-size:16px; color:#0A1A44; margin:0 0 8px 0;'>Additional Information</h3>
-
-        <table width='100%' style='font-size:15px; line-height:1.35;'>
-          <tr><td><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
-          <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
-        </table>
-
-        <div style='margin-top:18px; background:#0A1A44; color:#fff; padding:12px;
-                    border-radius:6px; text-align:center; font-size:15px;'>
-            Contact form enquiry received.
-        </div>
 
       </td>
     </tr>
@@ -316,7 +302,6 @@ def apply_form(request):
 
 </div>
 """
-
 
             mail = EmailMultiAlternatives(
                 subject=f"Contact Enquiry — {name}",
