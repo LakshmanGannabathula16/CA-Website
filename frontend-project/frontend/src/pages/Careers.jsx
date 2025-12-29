@@ -151,11 +151,10 @@ export default function Careers() {
             fd.append("dob", formData.dob ? formatDateDDMMYYYY(formData.dob) : "");
             if (formData.resume) fd.append("resume", formData.resume);
 
-            const res = await fetch("http://localhost:8000/api/apply/", {
+            const res = await fetch("/api/apply/", {
                 method: "POST",
                 body: fd,
             });
-
             const data = await res.json();
             if (!data.ok) throw new Error(data.message || "Server error");
 
