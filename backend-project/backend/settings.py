@@ -105,7 +105,7 @@ STATIC_URL = "/static/"
 
 # where React build assets live
 STATICFILES_DIRS = [
-    BASE_DIR / "frontend" / "dist" / "assets",
+    BASE_DIR / "frontend" / "dist" /,
     BASE_DIR / "backend" / "static",
 ]
 
