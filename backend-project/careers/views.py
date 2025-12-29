@@ -366,5 +366,10 @@ def apply_form(request):
 
         return JsonResponse({"ok": True, "message": "Application sent successfully"})
 
-    except Exception as e:
-        return JsonResponse({"ok": False, "message": "Server error: " + str(e)}, status=500)
+   except Exception as e:
+    print("APPLY_FORM ERROR:", e)
+    return JsonResponse(
+        {"ok": False, "message": "Server error, please try again"},
+        status=500
+    )
+        
