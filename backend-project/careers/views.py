@@ -310,19 +310,19 @@ def apply_form(request):
 """
 
             # ---- SAFE EMAIL SEND (never crashes server)
-            try:
-                mail = EmailMultiAlternatives(
-                    subject=f"Contact Enquiry — {name}",
-                    body="",
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    to=[settings.HR_EMAIL],
-                )
+           try:
+    mail = EmailMultiAlternatives(
+        subject=f"Contact Enquiry — {name}",
+        body="",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[settings.HR_EMAIL],
+    )
 
-                mail.attach_alternative(html_body, "text/html")
-                mail.send()
+    mail.attach_alternative(html_body, "text/html")
+    mail.send()
 
-            except Exception as e:
-                print("CONTACT EMAIL ERROR:", e)
+except Exception as e:
+    print("CONTACT EMAIL FAILED:", e)
 
             return JsonResponse({"ok": True, "message": "Contact message received"})
 
@@ -338,22 +338,22 @@ def apply_form(request):
             return JsonResponse({"ok": False, "message": "Missing required fields"}, status=400)
 
         resume = request.FILES.get("resume")
+try:
+    mail = EmailMultiAlternatives(
+        subject=f"Job Application — {first} {last}",
+        body=f"Position: {position}\nEmail: {email}\nMobile: {mobile}",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[settings.HR_EMAIL],
+    )
 
-        try:
-            mail = EmailMultiAlternatives(
-                subject=f"Job Application — {first} {last}",
-                body=f"Position: {position}\nMobile: {mobile}\nEmail: {email}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[settings.HR_EMAIL],
-            )
+    if resume:
+        mail.attach(resume.name, resume.read(), resume.content_type)
 
-            if resume:
-                mail.attach(resume.name, resume.read(), resume.content_type)
+    mail.send()
 
-            mail.send()
+except Exception as e:
+    print("JOB EMAIL FAILED:", e)
 
-        except Exception as e:
-            print("JOB EMAIL ERROR:", e)
 
         return JsonResponse({"ok": True, "message": "Application sent successfully"})
 
