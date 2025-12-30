@@ -206,6 +206,14 @@ def live_news(request):
 # APPLY FORM — SENDGRID API
 # =========================================================
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import requests
+import base64
+from pathlib import Path
+
+
 @csrf_exempt
 def apply_form(request):
 
@@ -216,22 +224,21 @@ def apply_form(request):
         data = request.POST
         form_type = data.get("formType", "application")
 
-        # =======================
-        # READ LOGO + ENCODE
-        # =======================
+        # =========================
+        # READ LOGO → BASE64
+        # =========================
+        LOGO64 = ""
         try:
             logo_path = Path(settings.BASE_DIR) / "backend" / "static" / "ca-logo.png"
             with open(logo_path, "rb") as f:
                 LOGO64 = base64.b64encode(f.read()).decode()
         except Exception as e:
-            print("LOGO LOAD ERROR:", e)
-            LOGO64 = None
+            print("LOGO READ ERROR:", e)
 
         # =========================================================
         # CONTACT FORM
         # =========================================================
         if form_type == "contact":
-
             name = data.get("name", "")
             number = data.get("number", "")
             email = data.get("email", "")
@@ -242,75 +249,57 @@ def apply_form(request):
                 return JsonResponse({"ok": False, "message": "Name and Email required"}, status=400)
 
             html_body = f"""
-<div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
-  <table align='center' width='600' cellpadding='0' cellspacing='0'
-         style='background:#ffffff; border-radius:10px; border:1px solid #d7dce2;
-                box-shadow:0 2px 8px rgba(0,0,0,0.08);'>
+<div style='background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
+<table width='600' align='center' cellpadding='0' cellspacing='0'
+       style='background:#fff; border-radius:10px; border:1px solid #d7dce2;'>
 
+<tr>
+<td style='background:#0A1A44; padding:22px; color:#fff; border-radius:10px 10px 0 0;'>
+  <table width='100%'>
     <tr>
-      <td style="background:#0A1A44; padding:24px 20px; color:#fff; border-radius:10px 10px 0 0;">
-        <table width="100%">
-          <tr>
-            <td width="70">
-              <img src="cid:firmlogo" style="width:65px; display:block;">
-            </td>
-            <td style="padding-left:10px; text-align:left;">
-              <div style="font-size:20px; font-weight:700;">Pavan Kalyan & Associates</div>
-              <div style="font-size:13px; opacity:0.85;">Contact Enquiry</div>
-            </td>
-          </tr>
-        </table>
+      <td align='center'>
+        <img src="data:image/png;base64,{LOGO64}" style='width:65px; display:block; margin:0 auto;'>
+        <div style='font-size:20px; font-weight:700; margin-top:6px;'>Pavan Kalyan & Associates</div>
+        <div style='font-size:13px; opacity:.9;'>Contact Enquiry</div>
       </td>
     </tr>
-
-    <tr>
-      <td style='padding:24px;'>
-        <table width='100%' style='font-size:15px; line-height:1.45;'>
-          <tr><td><b>Name:</b></td><td>{name}</td></tr>
-          <tr><td><b>Email:</b></td><td>{email}</td></tr>
-          <tr><td><b>Mobile:</b></td><td>{number}</td></tr>
-          <tr><td><b>City:</b></td><td>{city}</td></tr>
-          <tr><td><b>Message:</b></td><td>{message}</td></tr>
-        </table>
-      </td>
-    </tr>
-
-    <tr>
-      <td style='background:#f1f3f7; padding:14px; text-align:center; font-size:12px;
-                 color:#555; border-top:1px solid #d8dce2; border-radius:0 0 10px 10px;'>
-        Sent to HR Email: {settings.HR_EMAIL}<br>
-        © Pavan Kalyan & Associates — Chartered Accountants
-      </td>
-    </tr>
-
   </table>
+</td>
+</tr>
+
+<tr>
+<td style='padding:20px; font-size:14px;'>
+<table width='100%'>
+<tr><td><b>Name:</b></td><td>{name}</td></tr>
+<tr><td><b>Email:</b></td><td>{email}</td></tr>
+<tr><td><b>Mobile:</b></td><td>{number}</td></tr>
+<tr><td><b>City:</b></td><td>{city}</td></tr>
+<tr><td><b>Message:</b></td><td>{message}</td></tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td style='background:#f1f3f7; padding:12px; text-align:center; font-size:12px; border-radius:0 0 10px 10px;'>
+Sent to HR: {settings.HR_EMAIL}<br>
+© Pavan Kalyan & Associates — Chartered Accountants
+</td>
+</tr>
+
+</table>
 </div>
 """
 
+            payload = {
+                "personalizations": [{
+                    "to": [{"email": settings.HR_EMAIL}],
+                    "subject": f"Contact Enquiry — {name}",
+                }],
+                "from": {"email": settings.DEFAULT_FROM_EMAIL},
+                "content": [{"type": "text/html", "value": html_body}],
+            }
+
             try:
-                payload = {
-                    "personalizations": [
-                        {
-                            "to": [{"email": settings.HR_EMAIL}],
-                            "subject": f"Contact Enquiry — {name}",
-                        }
-                    ],
-                    "from": {"email": settings.DEFAULT_FROM_EMAIL},
-                    "content": [{"type": "text/html", "value": html_body}],
-                }
-
-                # attach inline logo if available
-                if LOGO64:
-                    payload["attachments"] = [
-                        {
-                            "content": LOGO64,
-                            "type": "image/png",
-                            "filename": "ca-logo.png",
-                            "disposition": "inline",
-                            "content_id": "firmlogo",
-                        }
-                    ]
-
                 r = requests.post(
                     "https://api.sendgrid.com/v3/mail/send",
                     json=payload,
@@ -320,10 +309,8 @@ def apply_form(request):
                     },
                     timeout=10,
                 )
-
                 if r.status_code >= 400:
                     print("SENDGRID CONTACT ERROR:", r.text)
-
             except Exception as e:
                 print("CONTACT API ERROR:", e)
 
@@ -336,7 +323,6 @@ def apply_form(request):
         last = data.get("lastName", "")
         email = data.get("email", "")
         mobile = data.get("mobile", "")
-
         gender = data.get("gender", "")
         dob = data.get("dob", "")
 
@@ -353,104 +339,82 @@ def apply_form(request):
             return JsonResponse({"ok": False, "message": "Missing required fields"}, status=400)
 
         html_body = f"""
-<div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
-  <table align='center' width='600' cellpadding='0' cellspacing='0'
-         style='background:#ffffff; border-radius:10px; border:1px solid #d7dce2;
-                box-shadow:0 2px 8px rgba(0,0,0,0.08);'>
+<div style='background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
+<table width='600' align='center' cellpadding='0' cellspacing='0'
+       style='background:#fff; border-radius:10px; border:1px solid #d7dce2;'>
 
-    <!-- HEADER -->
+<tr>
+<td style='background:#0A1A44; padding:22px; color:#fff; border-radius:10px 10px 0 0;'>
+  <table width='100%'>
     <tr>
-      <td style="background:#0A1A44; padding:22px 18px; color:#fff; border-radius:10px 10px 0 0;">
-        <table width="100%">
-          <tr>
-            <td width="70">
-              <img src="cid:firmlogo" style="width:65px; display:block;">
-            </td>
-            <td style="padding-left:10px; text-align:left;">
-              <div style="font-size:20px; font-weight:700;">Pavan Kalyan & Associates</div>
-              <div style="font-size:13px; opacity:0.85;">Job Application Received</div>
-            </td>
-          </tr>
-        </table>
+      <td align='center'>
+        <img src="data:image/png;base64,{LOGO64}" style='width:65px; display:block; margin:0 auto;'>
+        <div style='font-size:20px; font-weight:700; margin-top:6px;'>Pavan Kalyan & Associates</div>
+        <div style='font-size:13px; opacity:.9;'>Job Application Received</div>
       </td>
     </tr>
-
-    <!-- PERSONAL -->
-    <tr>
-      <td style='padding:20px 22px;'>
-        <h3 style='font-size:15px; color:#0A1A44;'>👤 Personal Details</h3>
-        <table width='100%' style='font-size:14px;'>
-          <tr><td><b>Name:</b></td><td>{first} {last}</td></tr>
-          <tr><td><b>Email:</b></td><td>{email}</td></tr>
-          <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
-          <tr><td><b>Gender:</b></td><td>{gender or "—"}</td></tr>
-          <tr><td><b>Date of Birth:</b></td><td>{dob or "—"}</td></tr>
-        </table>
-      </td>
-    </tr>
-
-    <!-- PROFESSIONAL -->
-    <tr>
-      <td style='padding:20px 22px;'>
-        <h3 style='font-size:15px; color:#0A1A44;'>💼 Professional Details</h3>
-        <table width='100%' style='font-size:14px;'>
-          <tr><td><b>Position:</b></td><td>{position}</td></tr>
-          <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
-          <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
-          <tr><td><b>Experience:</b></td>
-              <td>{experienceYear or "0"} yrs {experienceMonth or "0"} months</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
-    <!-- ADDITIONAL -->
-    <tr>
-      <td style='padding:20px 22px;'>
-        <h3 style='font-size:15px; color:#0A1A44;'>📝 Additional Details</h3>
-        <table width='100%' style='font-size:14px;'>
-          <tr><td><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
-          <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
-        </table>
-      </td>
-    </tr>
-
-    <!-- FOOTER -->
-    <tr>
-      <td style='background:#f1f3f7; padding:14px; text-align:center; font-size:12px;
-                 color:#555; border-top:1px solid #d8dce2; border-radius:0 0 10px 10px;'>
-        Sent to HR: {settings.HR_EMAIL}<br>
-        © Pavan Kalyan & Associates — Chartered Accountants
-      </td>
-    </tr>
-
   </table>
+</td>
+</tr>
+
+<tr>
+<td style='padding:18px;'>
+<h3 style='font-size:14px; color:#0A1A44;'>👤 Personal Details</h3>
+<table width='100%' style='font-size:13px;'>
+<tr><td><b>Name:</b></td><td>{first} {last}</td></tr>
+<tr><td><b>Email:</b></td><td>{email}</td></tr>
+<tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
+<tr><td><b>Gender:</b></td><td>{gender or "—"}</td></tr>
+<tr><td><b>Date of Birth:</b></td><td>{dob or "—"}</td></tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td style='padding:18px;'>
+<h3 style='font-size:14px; color:#0A1A44;'>💼 Professional Details</h3>
+<table width='100%' style='font-size:13px;'>
+<tr><td><b>Position:</b></td><td>{position}</td></tr>
+<tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
+<tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
+<tr><td><b>Experience:</b></td>
+<td>{experienceYear or "0"} yrs {experienceMonth or "0"} months</td>
+</tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td style='padding:18px;'>
+<h3 style='font-size:14px; color:#0A1A44;'>📝 Additional Details</h3>
+<table width='100%' style='font-size:13px;'>
+<tr><td><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
+<tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td style='background:#f1f3f7; padding:12px; text-align:center; font-size:12px; border-radius:0 0 10px 10px;'>
+Sent to HR: {settings.HR_EMAIL}<br>
+© Pavan Kalyan & Associates — Chartered Accountants
+</td>
+</tr>
+
+</table>
 </div>
 """
 
+        payload = {
+            "personalizations": [{
+                "to": [{"email": settings.HR_EMAIL}],
+                "subject": f"Job Application — {first} {last}",
+            }],
+            "from": {"email": settings.DEFAULT_FROM_EMAIL},
+            "content": [{"type": "text/html", "value": html_body}],
+        }
+
         try:
-            payload = {
-                "personalizations": [
-                    {
-                        "to": [{"email": settings.HR_EMAIL}],
-                        "subject": f"Job Application — {first} {last}",
-                    }
-                ],
-                "from": {"email": settings.DEFAULT_FROM_EMAIL},
-                "content": [{"type": "text/html", "value": html_body}],
-            }
-
-            if LOGO64:
-                payload["attachments"] = [
-                    {
-                        "content": LOGO64,
-                        "type": "image/png",
-                        "filename": "ca-logo.png",
-                        "disposition": "inline",
-                        "content_id": "firmlogo",
-                    }
-                ]
-
             r = requests.post(
                 "https://api.sendgrid.com/v3/mail/send",
                 json=payload,
@@ -460,10 +424,8 @@ def apply_form(request):
                 },
                 timeout=10,
             )
-
             if r.status_code >= 400:
                 print("SENDGRID JOB ERROR:", r.text)
-
         except Exception as e:
             print("JOB API ERROR:", e)
 
