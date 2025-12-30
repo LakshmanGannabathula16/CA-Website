@@ -248,7 +248,7 @@ def apply_form(request):
             if not name or not email:
                 return JsonResponse({"ok": False, "message": "Name and Email required"}, status=400)
 
-            # ⭐ YOUR SAME HTML BODY — NOT CHANGED ⭐
+            # ⭐ YOUR SAME HTML (unchanged) ⭐
             html_body = f"""
 <div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
 
@@ -309,23 +309,22 @@ def apply_form(request):
 </div>
 """
 
-            # ---- SAFE EMAIL SEND (never crashes server)
-           try:
-    mail = EmailMultiAlternatives(
-        subject=f"Contact Enquiry — {name}",
-        body="",
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[settings.HR_EMAIL],
-    )
+            # ---- SAFE EMAIL SEND ----
+            try:
+                mail = EmailMultiAlternatives(
+                    subject=f"Contact Enquiry — {name}",
+                    body="",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[settings.HR_EMAIL],
+                )
 
-    mail.attach_alternative(html_body, "text/html")
-    mail.send()
+                mail.attach_alternative(html_body, "text/html")
+                mail.send()
 
-except Exception as e:
-    print("CONTACT EMAIL FAILED:", e)
+            except Exception as e:
+                print("CONTACT EMAIL FAILED:", e)
 
             return JsonResponse({"ok": True, "message": "Contact message received"})
-
 
         # ---------------- JOB APPLICATION ----------------
         first = data.get("firstName", "")
@@ -338,22 +337,22 @@ except Exception as e:
             return JsonResponse({"ok": False, "message": "Missing required fields"}, status=400)
 
         resume = request.FILES.get("resume")
-try:
-    mail = EmailMultiAlternatives(
-        subject=f"Job Application — {first} {last}",
-        body=f"Position: {position}\nEmail: {email}\nMobile: {mobile}",
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[settings.HR_EMAIL],
-    )
 
-    if resume:
-        mail.attach(resume.name, resume.read(), resume.content_type)
+        try:
+            mail = EmailMultiAlternatives(
+                subject=f"Job Application — {first} {last}",
+                body=f"Position: {position}\nEmail: {email}\nMobile: {mobile}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[settings.HR_EMAIL],
+            )
 
-    mail.send()
+            if resume:
+                mail.attach(resume.name, resume.read(), resume.content_type)
 
-except Exception as e:
-    print("JOB EMAIL FAILED:", e)
+            mail.send()
 
+        except Exception as e:
+            print("JOB EMAIL FAILED:", e)
 
         return JsonResponse({"ok": True, "message": "Application sent successfully"})
 
