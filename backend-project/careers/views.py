@@ -206,14 +206,6 @@ def live_news(request):
 # APPLY FORM — SENDGRID API
 # =========================================================
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
-import requests
-import base64
-from pathlib import Path
-
-
 @csrf_exempt
 def apply_form(request):
 
@@ -225,7 +217,7 @@ def apply_form(request):
         form_type = data.get("formType", "application")
 
         # =========================
-        # READ LOGO → BASE64
+        # READ LOGO AS BASE64
         # =========================
         LOGO64 = ""
         try:
@@ -239,6 +231,7 @@ def apply_form(request):
         # CONTACT FORM
         # =========================================================
         if form_type == "contact":
+
             name = data.get("name", "")
             number = data.get("number", "")
             email = data.get("email", "")
@@ -254,12 +247,14 @@ def apply_form(request):
        style='background:#fff; border-radius:10px; border:1px solid #d7dce2;'>
 
 <tr>
-<td style='background:#0A1A44; padding:22px; color:#fff; border-radius:10px 10px 0 0;'>
+<td style='background:#0A1A44; padding:20px; color:#fff; border-radius:10px 10px 0 0;'>
   <table width='100%'>
     <tr>
-      <td align='center'>
-        <img src="data:image/png;base64,{LOGO64}" style='width:65px; display:block; margin:0 auto;'>
-        <div style='font-size:20px; font-weight:700; margin-top:6px;'>Pavan Kalyan & Associates</div>
+      <td width='80' align='left'>
+        <img src="data:image/png;base64,{LOGO64}" style='width:65px; display:block;'>
+      </td>
+      <td align='left'>
+        <div style='font-size:20px; font-weight:700;'>Pavan Kalyan & Associates</div>
         <div style='font-size:13px; opacity:.9;'>Contact Enquiry</div>
       </td>
     </tr>
@@ -280,9 +275,9 @@ def apply_form(request):
 </tr>
 
 <tr>
-<td style='background:#f1f3f7; padding:12px; text-align:center; font-size:12px; border-radius:0 0 10px 10px;'>
+<td style='background:#f1f3f7; padding:10px; text-align:center; font-size:12px; border-radius:0 0 10px 10px;'>
 Sent to HR: {settings.HR_EMAIL}<br>
-© Pavan Kalyan & Associates — Chartered Accountants
+© Pavan Kalyan & Associates
 </td>
 </tr>
 
@@ -299,25 +294,20 @@ Sent to HR: {settings.HR_EMAIL}<br>
                 "content": [{"type": "text/html", "value": html_body}],
             }
 
-            try:
-                r = requests.post(
-                    "https://api.sendgrid.com/v3/mail/send",
-                    json=payload,
-                    headers={
-                        "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
-                        "Content-Type": "application/json",
-                    },
-                    timeout=10,
-                )
-                if r.status_code >= 400:
-                    print("SENDGRID CONTACT ERROR:", r.text)
-            except Exception as e:
-                print("CONTACT API ERROR:", e)
+            requests.post(
+                "https://api.sendgrid.com/v3/mail/send",
+                json=payload,
+                headers={
+                    "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
+                    "Content-Type": "application/json",
+                },
+                timeout=10,
+            )
 
             return JsonResponse({"ok": True, "message": "Message sent"})
 
         # =========================================================
-        # JOB APPLICATION
+        # JOB APPLICATION FORM
         # =========================================================
         first = data.get("firstName", "")
         last = data.get("lastName", "")
@@ -331,7 +321,6 @@ Sent to HR: {settings.HR_EMAIL}<br>
         lastCompany = data.get("lastCompany", "")
         experienceYear = data.get("experienceYear", "")
         experienceMonth = data.get("experienceMonth", "")
-
         portfolio = data.get("portfolio", "")
         comments = data.get("comments", "")
 
@@ -344,13 +333,15 @@ Sent to HR: {settings.HR_EMAIL}<br>
        style='background:#fff; border-radius:10px; border:1px solid #d7dce2;'>
 
 <tr>
-<td style='background:#0A1A44; padding:22px; color:#fff; border-radius:10px 10px 0 0;'>
+<td style='background:#0A1A44; padding:20px; color:#fff; border-radius:10px 10px 0 0;'>
   <table width='100%'>
     <tr>
-      <td align='center'>
-        <img src="data:image/png;base64,{LOGO64}" style='width:65px; display:block; margin:0 auto;'>
-        <div style='font-size:20px; font-weight:700; margin-top:6px;'>Pavan Kalyan & Associates</div>
-        <div style='font-size:13px; opacity:.9;'>Job Application Received</div>
+      <td width='80' align='left'>
+        <img src="data:image/png;base64,{LOGO64}" style='width:65px; display:block;'>
+      </td>
+      <td align='left'>
+        <div style='font-size:20px; font-weight:700;'>Pavan Kalyan & Associates</div>
+        <div style='font-size:13px; opacity:.9;'>Job Application</div>
       </td>
     </tr>
   </table>
@@ -359,7 +350,7 @@ Sent to HR: {settings.HR_EMAIL}<br>
 
 <tr>
 <td style='padding:18px;'>
-<h3 style='font-size:14px; color:#0A1A44;'>👤 Personal Details</h3>
+<h3 style='color:#0A1A44;'>👤 Personal Details</h3>
 <table width='100%' style='font-size:13px;'>
 <tr><td><b>Name:</b></td><td>{first} {last}</td></tr>
 <tr><td><b>Email:</b></td><td>{email}</td></tr>
@@ -372,21 +363,19 @@ Sent to HR: {settings.HR_EMAIL}<br>
 
 <tr>
 <td style='padding:18px;'>
-<h3 style='font-size:14px; color:#0A1A44;'>💼 Professional Details</h3>
+<h3 style='color:#0A1A44;'>💼 Professional Details</h3>
 <table width='100%' style='font-size:13px;'>
 <tr><td><b>Position:</b></td><td>{position}</td></tr>
 <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
 <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
-<tr><td><b>Experience:</b></td>
-<td>{experienceYear or "0"} yrs {experienceMonth or "0"} months</td>
-</tr>
+<tr><td><b>Experience:</b></td><td>{experienceYear or "0"} yrs {experienceMonth or "0"} months</td></tr>
 </table>
 </td>
 </tr>
 
 <tr>
 <td style='padding:18px;'>
-<h3 style='font-size:14px; color:#0A1A44;'>📝 Additional Details</h3>
+<h3 style='color:#0A1A44;'>📝 Additional Details</h3>
 <table width='100%' style='font-size:13px;'>
 <tr><td><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
 <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
@@ -395,9 +384,9 @@ Sent to HR: {settings.HR_EMAIL}<br>
 </tr>
 
 <tr>
-<td style='background:#f1f3f7; padding:12px; text-align:center; font-size:12px; border-radius:0 0 10px 10px;'>
+<td style='background:#f1f3f7; padding:10px; text-align:center; font-size:12px; border-radius:0 0 10px 10px;'>
 Sent to HR: {settings.HR_EMAIL}<br>
-© Pavan Kalyan & Associates — Chartered Accountants
+© Pavan Kalyan & Associates
 </td>
 </tr>
 
@@ -414,20 +403,15 @@ Sent to HR: {settings.HR_EMAIL}<br>
             "content": [{"type": "text/html", "value": html_body}],
         }
 
-        try:
-            r = requests.post(
-                "https://api.sendgrid.com/v3/mail/send",
-                json=payload,
-                headers={
-                    "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
-                    "Content-Type": "application/json",
-                },
-                timeout=10,
-            )
-            if r.status_code >= 400:
-                print("SENDGRID JOB ERROR:", r.text)
-        except Exception as e:
-            print("JOB API ERROR:", e)
+        requests.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
+                "Content-Type": "application/json",
+            },
+            timeout=10,
+        )
 
         return JsonResponse({"ok": True, "message": "Application sent"})
 
