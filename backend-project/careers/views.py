@@ -300,11 +300,12 @@ def apply_form(request):
                 )
 
                 mail.attach_alternative(html_body, "text/html")
-                mail.send()
+                mail.send(fail_silently=True)
+              
 
             except Exception as e:
                 print("CONTACT EMAIL FAILED:", e)
-                return JsonResponse({"ok": False, "message": "Email sending failed"}, status=500)
+
 
             return JsonResponse({"ok": True, "message": "Contact message received"})
 
@@ -331,13 +332,11 @@ def apply_form(request):
             if resume:
                 mail.attach(resume.name, resume.read(), resume.content_type)
 
-            mail.send()
+            mail.send(fail_silently=True)
 
         except Exception as e:
             print("JOB EMAIL FAILED:", e)
 
         return JsonResponse({"ok": True, "message": "Application sent successfully"})
 
-    except Exception as e:
-        print("APPLY_FORM ERROR:", e)
-        return JsonResponse({"ok": False, "message": "Server error"}, status=500)
+ 
