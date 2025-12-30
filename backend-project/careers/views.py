@@ -238,7 +238,11 @@ def apply_form(request):
         <table align="center" cellpadding="0" cellspacing="0" style="margin:0 auto; text-align:center;">
           <tr>
             <td align="right" valign="middle" style="padding-right:12px;">
-              <img src="cid:firmlogo" alt="Firm Logo" style="width:65px; height:auto; display:block;">
+             <img
+                  src="https://ca-website-qj5u.onrender.com/static/ca-logo.png"
+                    alt="Firm Logo"
+                  style="width:65px; height:auto; display:block;"
+             >
             </td>
             <td align="left" valign="middle">
               <div style="font-size:22px; font-weight:700; margin-bottom:2px;">
