@@ -6,6 +6,8 @@ import requests
 import feedparser
 import time
 import calendar
+import base64
+from pathlib import Path
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
@@ -204,8 +206,6 @@ def live_news(request):
 # APPLY FORM — SENDGRID API
 # =========================================================
 
-
-
 @csrf_exempt
 def apply_form(request):
 
@@ -215,6 +215,17 @@ def apply_form(request):
     try:
         data = request.POST
         form_type = data.get("formType", "application")
+
+        # =======================
+        # READ LOGO + ENCODE
+        # =======================
+        try:
+            logo_path = Path(settings.BASE_DIR) / "backend" / "static" / "ca-logo.png"
+            with open(logo_path, "rb") as f:
+                LOGO64 = base64.b64encode(f.read()).decode()
+        except Exception as e:
+            print("LOGO LOAD ERROR:", e)
+            LOGO64 = None
 
         # =========================================================
         # CONTACT FORM
@@ -235,18 +246,17 @@ def apply_form(request):
   <table align='center' width='600' cellpadding='0' cellspacing='0'
          style='background:#ffffff; border-radius:10px; border:1px solid #d7dce2;
                 box-shadow:0 2px 8px rgba(0,0,0,0.08);'>
+
     <tr>
-      <td style="background:#0A1A44; padding:28px 20px; color:#fff;
-                 border-radius:10px 10px 0 0; text-align:center;">
-        <table align="center" cellpadding="0" cellspacing="0">
+      <td style="background:#0A1A44; padding:24px 20px; color:#fff; border-radius:10px 10px 0 0;">
+        <table width="100%">
           <tr>
-            <td style="padding-right:12px;">
-              <img src="https://ca-website-qj5u.onrender.com/static/ca-logo.png"
-                   style="width:65px; display:block;">
+            <td width="70">
+              <img src="cid:firmlogo" style="width:65px; display:block;">
             </td>
-            <td style="text-align:left;">
-              <div style="font-size:22px; font-weight:700;">Pavan Kalyan & Associates</div>
-              <div style="font-size:14px; opacity:0.85;">Chartered Accountants</div>
+            <td style="padding-left:10px; text-align:left;">
+              <div style="font-size:20px; font-weight:700;">Pavan Kalyan & Associates</div>
+              <div style="font-size:13px; opacity:0.85;">Contact Enquiry</div>
             </td>
           </tr>
         </table>
@@ -255,7 +265,6 @@ def apply_form(request):
 
     <tr>
       <td style='padding:24px;'>
-        <h3 style='font-size:16px; color:#0A1A44;'>Contact Enquiry</h3>
         <table width='100%' style='font-size:15px; line-height:1.45;'>
           <tr><td><b>Name:</b></td><td>{name}</td></tr>
           <tr><td><b>Email:</b></td><td>{email}</td></tr>
@@ -267,12 +276,13 @@ def apply_form(request):
     </tr>
 
     <tr>
-      <td style='background:#f1f3f7; padding:14px; text-align:center; font-size:13px;
+      <td style='background:#f1f3f7; padding:14px; text-align:center; font-size:12px;
                  color:#555; border-top:1px solid #d8dce2; border-radius:0 0 10px 10px;'>
         Sent to HR Email: {settings.HR_EMAIL}<br>
         © Pavan Kalyan & Associates — Chartered Accountants
       </td>
     </tr>
+
   </table>
 </div>
 """
@@ -288,6 +298,18 @@ def apply_form(request):
                     "from": {"email": settings.DEFAULT_FROM_EMAIL},
                     "content": [{"type": "text/html", "value": html_body}],
                 }
+
+                # attach inline logo if available
+                if LOGO64:
+                    payload["attachments"] = [
+                        {
+                            "content": LOGO64,
+                            "type": "image/png",
+                            "filename": "ca-logo.png",
+                            "disposition": "inline",
+                            "content_id": "firmlogo",
+                        }
+                    ]
 
                 r = requests.post(
                     "https://api.sendgrid.com/v3/mail/send",
@@ -308,12 +330,13 @@ def apply_form(request):
             return JsonResponse({"ok": True, "message": "Message sent"})
 
         # =========================================================
-        # JOB APPLICATION FORM
+        # JOB APPLICATION
         # =========================================================
         first = data.get("firstName", "")
         last = data.get("lastName", "")
         email = data.get("email", "")
         mobile = data.get("mobile", "")
+
         gender = data.get("gender", "")
         dob = data.get("dob", "")
 
@@ -341,8 +364,7 @@ def apply_form(request):
         <table width="100%">
           <tr>
             <td width="70">
-              <img src="https://ca-website-qj5u.onrender.com/static/ca-logo.png"
-                   style="width:65px; display:block;">
+              <img src="cid:firmlogo" style="width:65px; display:block;">
             </td>
             <td style="padding-left:10px; text-align:left;">
               <div style="font-size:20px; font-weight:700;">Pavan Kalyan & Associates</div>
@@ -417,6 +439,17 @@ def apply_form(request):
                 "from": {"email": settings.DEFAULT_FROM_EMAIL},
                 "content": [{"type": "text/html", "value": html_body}],
             }
+
+            if LOGO64:
+                payload["attachments"] = [
+                    {
+                        "content": LOGO64,
+                        "type": "image/png",
+                        "filename": "ca-logo.png",
+                        "disposition": "inline",
+                        "content_id": "firmlogo",
+                    }
+                ]
 
             r = requests.post(
                 "https://api.sendgrid.com/v3/mail/send",
