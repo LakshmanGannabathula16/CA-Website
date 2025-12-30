@@ -9,8 +9,9 @@ import calendar
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
+
 # =========================================================
-# LIVE NEWS (unchanged)
+# LIVE NEWS
 # =========================================================
 
 _LIVE_NEWS_CACHE = {"ts": 0, "data": None}
@@ -198,8 +199,9 @@ def live_news(request):
 
     return JsonResponse(final)
 
+
 # =========================================================
-# APPLY FORM — SendGrid HTTP API
+# APPLY FORM — SENDGRID API
 # =========================================================
 
 
@@ -225,7 +227,6 @@ def apply_form(request):
             if not name or not email:
                 return JsonResponse({"ok": False, "message": "Name and Email required"}, status=400)
 
-            # ORIGINAL HTML BODY
             html_body = f"""
 <div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
   <table align='center' width='600' cellpadding='0' cellspacing='0'
@@ -276,14 +277,15 @@ def apply_form(request):
 </div>
 """
 
-            # SENDGRID API SEND
             try:
                 payload = {
                     "personalizations": [
-                        {"to": [{"email": settings.HR_EMAIL}],
-                         "subject": f"Contact Enquiry — {name}"}
+                        {
+                            "to": [{"email": settings.HR_EMAIL}],
+                            "subject": f"Contact Enquiry — {name}",
+                        }
                     ],
-                    "from": {"email": settings.FROM_EMAIL},
+                    "from": {"email": settings.DEFAULT_FROM_EMAIL},
                     "content": [{"type": "text/html", "value": html_body}],
                 }
 
@@ -291,7 +293,7 @@ def apply_form(request):
                     "https://api.sendgrid.com/v3/mail/send",
                     json=payload,
                     headers={
-                        "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+                        "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
                         "Content-Type": "application/json",
                     },
                     timeout=10,
@@ -327,10 +329,12 @@ Position: {position}
         try:
             payload = {
                 "personalizations": [
-                    {"to": [{"email": settings.HR_EMAIL}],
-                     "subject": f"Job Application — {first} {last}"}
+                    {
+                        "to": [{"email": settings.HR_EMAIL}],
+                        "subject": f"Job Application — {first} {last}",
+                    }
                 ],
-                "from": {"email": settings.FROM_EMAIL},
+                "from": {"email": settings.DEFAULT_FROM_EMAIL},
                 "content": [{"type": "text/plain", "value": body}],
             }
 
@@ -338,7 +342,7 @@ Position: {position}
                 "https://api.sendgrid.com/v3/mail/send",
                 json=payload,
                 headers={
-                    "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+                    "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
                     "Content-Type": "application/json",
                 },
                 timeout=10,
