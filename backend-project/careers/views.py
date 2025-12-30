@@ -230,13 +230,15 @@ def live_news(request):
 def apply_form(request):
 
     if request.method != "POST":
-        return JsonResponse({"ok": False, "message": "Invalid request method"}, status=405)
+        return JsonResponse({"ok": False, "message": "Invalid request"}, status=405)
 
     try:
         data = request.POST
         form_type = data.get("formType", "application")
 
-        # ---------------- CONTACT FORM ----------------
+        # ============================
+        #   CONTACT FORM
+        # ============================
         if form_type == "contact":
 
             name = data.get("name", "")
@@ -246,8 +248,12 @@ def apply_form(request):
             message = data.get("message", "")
 
             if not name or not email:
-                return JsonResponse({"ok": False, "message": "Name and Email required"}, status=400)
+                return JsonResponse(
+                    {"ok": False, "message": "Name and Email required"},
+                    status=400
+                )
 
+            # ⭐ YOUR SAME HTML — NO CHANGE ⭐
             html_body = f"""
 <div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
 
@@ -301,15 +307,15 @@ def apply_form(request):
 
                 mail.attach_alternative(html_body, "text/html")
                 mail.send(fail_silently=True)
-              
 
             except Exception as e:
                 print("CONTACT EMAIL FAILED:", e)
 
+            return JsonResponse({"ok": True, "message": "Message sent"})
 
-            return JsonResponse({"ok": True, "message": "Contact message received"})
-
-        # ---------------- JOB APPLICATION ----------------
+        # ============================
+        #   JOB APPLICATION
+        # ============================
         first = data.get("firstName", "")
         last = data.get("lastName", "")
         email = data.get("email", "")
@@ -337,6 +343,8 @@ def apply_form(request):
         except Exception as e:
             print("JOB EMAIL FAILED:", e)
 
-        return JsonResponse({"ok": True, "message": "Application sent successfully"})
+        return JsonResponse({"ok": True, "message": "Application sent"})
 
- 
+    except Exception as e:
+        print("APPLY_FORM ERROR:", e)
+        return JsonResponse({"ok": False, "message": "Server error"}, status=500)
