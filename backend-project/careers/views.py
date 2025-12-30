@@ -323,6 +323,7 @@ def apply_form(request):
 
             # except Exception as e:
             #     print("CONTACT EMAIL FAILED:", e)
+            print("EMAIL SENDING DISABLED (TEST)")
 
             return JsonResponse({"ok": True, "message": "Contact message received"})
 
