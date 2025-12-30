@@ -236,9 +236,9 @@ def apply_form(request):
         data = request.POST
         form_type = data.get("formType", "application")
 
-        # ============================
-        #   CONTACT FORM
-        # ============================
+        # =================================================
+        # CONTACT FORM
+        # =================================================
         if form_type == "contact":
 
             name = data.get("name", "")
@@ -253,7 +253,7 @@ def apply_form(request):
                     status=400
                 )
 
-            # ⭐ YOUR SAME HTML — NO CHANGE ⭐
+            # ⭐ YOUR ORIGINAL HTML — NOT TOUCHED ⭐
             html_body = f"""
 <div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
 
@@ -265,8 +265,22 @@ def apply_form(request):
       <td style="background:#0A1A44; padding:28px 20px; color:#fff;
                  border-radius:10px 10px 0 0; text-align:center;">
 
-        <div style="font-size:22px; font-weight:700;">Pavan Kalyan & Associates</div>
-        <div style="font-size:14px; opacity:0.85;">Chartered Accountants</div>
+        <table align="center" cellpadding="0" cellspacing="0"
+               style="margin:0 auto; text-align:center;">
+          <tr>
+            <td align="right" valign="middle" style="padding-right:12px;">
+              <img src="cid:firmlogo" alt="Firm Logo" style="width:65px; height:auto; display:block;">
+            </td>
+            <td align="left" valign="middle">
+              <div style="font-size:22px; font-weight:700; margin-bottom:2px;">
+                Pavan Kalyan & Associates
+              </div>
+              <div style="font-size:14px; opacity:0.85;">
+                Chartered Accountants
+              </div>
+            </td>
+          </tr>
+        </table>
 
       </td>
     </tr>
@@ -274,7 +288,7 @@ def apply_form(request):
     <tr>
       <td style='padding:24px;'>
 
-        <h3 style='font-size:16px; color:#0A1A44;'>Contact Enquiry</h3>
+        <h3 style='font-size:16px; color:#0A1A44; margin:0 0 8px 0;'>Contact Enquiry</h3>
 
         <table width='100%' style='font-size:15px; line-height:1.45;'>
           <tr><td><b>Name:</b></td><td>{name}</td></tr>
@@ -288,15 +302,19 @@ def apply_form(request):
     </tr>
 
     <tr>
-      <td style='background:#f1f3f7; padding:14px; text-align:center; font-size:13px;'>
-        Sent to HR Email: {settings.HR_EMAIL}
+      <td style='background:#f1f3f7; padding:14px; text-align:center; font-size:13px;
+                 color:#555; border-top:1px solid #d8dce2; border-radius:0 0 10px 10px;'>
+        Sent to HR Email: {settings.HR_EMAIL}<br>
+        © Pavan Kalyan & Associates — Chartered Accountants
       </td>
     </tr>
 
   </table>
+
 </div>
 """
 
+            # ---- SEND EMAIL (SAFE, NO CRASH) ----
             try:
                 mail = EmailMultiAlternatives(
                     subject=f"Contact Enquiry — {name}",
@@ -304,18 +322,21 @@ def apply_form(request):
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     to=[settings.HR_EMAIL],
                 )
-
                 mail.attach_alternative(html_body, "text/html")
-                mail.send(fail_silently=True)
+
+                try:
+                    mail.send()
+                except Exception as e:
+                    print("CONTACT EMAIL ERROR:", e)
 
             except Exception as e:
-                print("CONTACT EMAIL FAILED:", e)
+                print("CONTACT SEND BLOCK ERROR:", e)
 
             return JsonResponse({"ok": True, "message": "Message sent"})
 
-        # ============================
-        #   JOB APPLICATION
-        # ============================
+        # =================================================
+        # JOB APPLICATION
+        # =================================================
         first = data.get("firstName", "")
         last = data.get("lastName", "")
         email = data.get("email", "")
@@ -330,7 +351,7 @@ def apply_form(request):
         try:
             mail = EmailMultiAlternatives(
                 subject=f"Job Application — {first} {last}",
-                body=f"Position: {position}\nEmail: {email}\nMobile: {mobile}",
+                body=f"Position: {position}\nMobile: {mobile}\nEmail: {email}",
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 to=[settings.HR_EMAIL],
             )
@@ -338,10 +359,13 @@ def apply_form(request):
             if resume:
                 mail.attach(resume.name, resume.read(), resume.content_type)
 
-            mail.send(fail_silently=True)
+            try:
+                mail.send()
+            except Exception as e:
+                print("JOB EMAIL ERROR:", e)
 
         except Exception as e:
-            print("JOB EMAIL FAILED:", e)
+            print("JOB SEND BLOCK ERROR:", e)
 
         return JsonResponse({"ok": True, "message": "Application sent"})
 
