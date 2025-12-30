@@ -1,27 +1,23 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-from email.mime.image import MIMEImage
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import feedparser
 import requests
-from bs4 import BeautifulSoup
-import os
-import json
+import feedparser
 import time
 import calendar
 from datetime import datetime, timezone
+from bs4 import BeautifulSoup
 
+# =========================================================
+# LIVE NEWS (unchanged)
+# =========================================================
 
 _LIVE_NEWS_CACHE = {"ts": 0, "data": None}
-_CACHE_TTL = 60 * 10  
+_CACHE_TTL = 60 * 10
 
 
 def _try_parse_entry_date(entry):
-    """Attempts to get a proper datetime from an RSS entry."""
     if not entry:
         return None
 
@@ -32,7 +28,6 @@ def _try_parse_entry_date(entry):
             return datetime.fromtimestamp(ts, tz=timezone.utc)
         except Exception:
             pass
-
 
     s = entry.get("published") or entry.get("updated") or entry.get("pubDate") or ""
     if s:
@@ -47,7 +42,6 @@ def _try_parse_entry_date(entry):
 
 
 def _parse_feed(url, source, limit=10):
-    """Fetch RSS feed items."""
     out = []
     try:
         feed = feedparser.parse(url)
@@ -66,7 +60,6 @@ def _parse_feed(url, source, limit=10):
 
 
 def _scrape_simple_list(url, selectors, source, limit=8):
-    """Scrape websites like TaxScan / CBIC."""
     out = []
     try:
         r = requests.get(url, timeout=8, headers={"User-Agent": "Mozilla/5.0"})
@@ -93,7 +86,6 @@ def _scrape_simple_list(url, selectors, source, limit=8):
 
 
 def _extract_due_dates(url, source, limit=6):
-    """Regex-based extraction of date-like strings from CA/GST/IT pages."""
     import re
     out = []
     try:
@@ -126,60 +118,36 @@ def _extract_due_dates(url, source, limit=6):
     return out
 
 
-def _normalize_item(title, date, source, link):
-    return {
-        "title": (title or "").strip(),
-        "date": date or "",
-        "source": source or "",
-        "link": link or ""
-    }
-
-
 @csrf_exempt
 def live_news(request):
-    """
-    FINAL AUTOMATIC VERSION
-    Returns:
-    {
-      ok: True,
-      today: [...],
-      previous: [...],
-      blogs: [...],
-      due_dates: [...]
-    }
-    """
 
     now_ts = time.time()
 
-
-    if (
-        _LIVE_NEWS_CACHE["data"]
-        and now_ts - _LIVE_NEWS_CACHE["ts"] < _CACHE_TTL
-    ):
+    if _LIVE_NEWS_CACHE["data"] and now_ts - _LIVE_NEWS_CACHE["ts"] < _CACHE_TTL:
         return JsonResponse(_LIVE_NEWS_CACHE["data"])
 
     news = []
     blogs = []
     due_dates = []
-    news += _parse_feed("https://taxguru.in/feed", "TaxGuru", limit=12)
-    news += _parse_feed("https://www.mca.gov.in/bin/mca/rss-feed.xml", "MCA", limit=8)
-    news += _parse_feed("https://incometaxindia.gov.in/_layouts/15/dit/TaxNewsHandler.ashx", "IncomeTax", limit=8)
 
+    news += _parse_feed("https://taxguru.in/feed", "TaxGuru", 12)
+    news += _parse_feed("https://www.mca.gov.in/bin/mca/rss-feed.xml", "MCA", 8)
+    news += _parse_feed("https://incometaxindia.gov.in/_layouts/15/dit/TaxNewsHandler.ashx", "IncomeTax", 8)
 
-    blogs += _parse_feed("https://www.caknowledge.com/feed", "CAknowledge", limit=10)
-    blogs += _scrape_simple_list("https://taxscan.in/category/gst/", ["h2.entry-title a"], "TaxScan", limit=10)
+    blogs += _parse_feed("https://www.caknowledge.com/feed", "CAknowledge", 10)
+    blogs += _scrape_simple_list("https://taxscan.in/category/gst/", ["h2.entry-title a"], "TaxScan", 10)
 
-    news += _scrape_simple_list("https://cbic-gst.gov.in/news.html",
-                                [".listing li a", ".news-list a"],
-                                "CBIC/GST",
-                                limit=12)
+    news += _scrape_simple_list(
+        "https://cbic-gst.gov.in/news.html",
+        [".listing li a", ".news-list a"],
+        "CBIC/GST",
+        12
+    )
 
-  
     due_dates += _extract_due_dates("https://cbic-gst.gov.in/news.html", "CBIC/GST")
     due_dates += _extract_due_dates("https://incometaxindia.gov.in", "IncomeTax")
     due_dates += _extract_due_dates("https://taxguru.in", "TaxGuru")
 
-   
     def dedupe(arr):
         seen = set()
         out = []
@@ -206,11 +174,16 @@ def live_news(request):
     previous = []
 
     for i, item in enumerate(news):
-        normalized = _normalize_item(item["title"], item.get("date", ""), item["source"], item.get("link", ""))
+        obj = {
+            "title": item["title"],
+            "date": item.get("date", ""),
+            "source": item["source"],
+            "link": item.get("link", "")
+        }
         if i < 6:
-            today.append(normalized)
+            today.append(obj)
         else:
-            previous.append(normalized)
+            previous.append(obj)
 
     final = {
         "ok": True,
@@ -220,12 +193,16 @@ def live_news(request):
         "due_dates": due_dates[:12],
     }
 
-
-    _LIVE_NEWS_CACHE["ts"] = time.time()
+    _LIVE_NEWS_CACHE["ts"] = now_ts
     _LIVE_NEWS_CACHE["data"] = final
 
     return JsonResponse(final)
-    
+
+# =========================================================
+# APPLY FORM — SendGrid HTTP API
+# =========================================================
+
+
 @csrf_exempt
 def apply_form(request):
 
@@ -236,9 +213,7 @@ def apply_form(request):
         data = request.POST
         form_type = data.get("formType", "application")
 
-        # =================================================
-        # CONTACT FORM
-        # =================================================
+        # ---------------- CONTACT FORM ----------------
         if form_type == "contact":
 
             name = data.get("name", "")
@@ -248,25 +223,18 @@ def apply_form(request):
             message = data.get("message", "")
 
             if not name or not email:
-                return JsonResponse(
-                    {"ok": False, "message": "Name and Email required"},
-                    status=400
-                )
+                return JsonResponse({"ok": False, "message": "Name and Email required"}, status=400)
 
-            # ⭐ YOUR ORIGINAL HTML — NOT TOUCHED ⭐
+            # ORIGINAL HTML BODY
             html_body = f"""
 <div style='width:100%; background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
-
   <table align='center' width='600' cellpadding='0' cellspacing='0'
          style='background:#ffffff; border-radius:10px; border:1px solid #d7dce2;
                 box-shadow:0 2px 8px rgba(0,0,0,0.08);'>
-
     <tr>
       <td style="background:#0A1A44; padding:28px 20px; color:#fff;
                  border-radius:10px 10px 0 0; text-align:center;">
-
-        <table align="center" cellpadding="0" cellspacing="0"
-               style="margin:0 auto; text-align:center;">
+        <table align="center" cellpadding="0" cellspacing="0" style="margin:0 auto; text-align:center;">
           <tr>
             <td align="right" valign="middle" style="padding-right:12px;">
               <img src="cid:firmlogo" alt="Firm Logo" style="width:65px; height:auto; display:block;">
@@ -281,15 +249,12 @@ def apply_form(request):
             </td>
           </tr>
         </table>
-
       </td>
     </tr>
 
     <tr>
       <td style='padding:24px;'>
-
         <h3 style='font-size:16px; color:#0A1A44; margin:0 0 8px 0;'>Contact Enquiry</h3>
-
         <table width='100%' style='font-size:15px; line-height:1.45;'>
           <tr><td><b>Name:</b></td><td>{name}</td></tr>
           <tr><td><b>Email:</b></td><td>{email}</td></tr>
@@ -297,7 +262,6 @@ def apply_form(request):
           <tr><td><b>City:</b></td><td>{city}</td></tr>
           <tr><td><b>Message:</b></td><td>{message}</td></tr>
         </table>
-
       </td>
     </tr>
 
@@ -308,35 +272,40 @@ def apply_form(request):
         © Pavan Kalyan & Associates — Chartered Accountants
       </td>
     </tr>
-
   </table>
-
 </div>
 """
 
-            # ---- SEND EMAIL (SAFE, NO CRASH) ----
+            # SENDGRID API SEND
             try:
-                mail = EmailMultiAlternatives(
-                    subject=f"Contact Enquiry — {name}",
-                    body="",
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    to=[settings.HR_EMAIL],
-                )
-                mail.attach_alternative(html_body, "text/html")
+                payload = {
+                    "personalizations": [
+                        {"to": [{"email": settings.HR_EMAIL}],
+                         "subject": f"Contact Enquiry — {name}"}
+                    ],
+                    "from": {"email": settings.FROM_EMAIL},
+                    "content": [{"type": "text/html", "value": html_body}],
+                }
 
-                try:
-                    mail.send()
-                except Exception as e:
-                    print("CONTACT EMAIL ERROR:", e)
+                r = requests.post(
+                    "https://api.sendgrid.com/v3/mail/send",
+                    json=payload,
+                    headers={
+                        "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+                        "Content-Type": "application/json",
+                    },
+                    timeout=10,
+                )
+
+                if r.status_code >= 400:
+                    print("SENDGRID CONTACT ERROR:", r.text)
 
             except Exception as e:
-                print("CONTACT SEND BLOCK ERROR:", e)
+                print("CONTACT API ERROR:", e)
 
             return JsonResponse({"ok": True, "message": "Message sent"})
 
-        # =================================================
-        # JOB APPLICATION
-        # =================================================
+        # ---------------- JOB APPLICATION ----------------
         first = data.get("firstName", "")
         last = data.get("lastName", "")
         email = data.get("email", "")
@@ -346,26 +315,40 @@ def apply_form(request):
         if not all([first, last, email, mobile, position]):
             return JsonResponse({"ok": False, "message": "Missing required fields"}, status=400)
 
-        resume = request.FILES.get("resume")
+        body = f"""
+Job Application
+
+Name: {first} {last}
+Email: {email}
+Mobile: {mobile}
+Position: {position}
+"""
 
         try:
-            mail = EmailMultiAlternatives(
-                subject=f"Job Application — {first} {last}",
-                body=f"Position: {position}\nMobile: {mobile}\nEmail: {email}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[settings.HR_EMAIL],
+            payload = {
+                "personalizations": [
+                    {"to": [{"email": settings.HR_EMAIL}],
+                     "subject": f"Job Application — {first} {last}"}
+                ],
+                "from": {"email": settings.FROM_EMAIL},
+                "content": [{"type": "text/plain", "value": body}],
+            }
+
+            r = requests.post(
+                "https://api.sendgrid.com/v3/mail/send",
+                json=payload,
+                headers={
+                    "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                timeout=10,
             )
 
-            if resume:
-                mail.attach(resume.name, resume.read(), resume.content_type)
-
-            try:
-                mail.send()
-            except Exception as e:
-                print("JOB EMAIL ERROR:", e)
+            if r.status_code >= 400:
+                print("SENDGRID JOB ERROR:", r.text)
 
         except Exception as e:
-            print("JOB SEND BLOCK ERROR:", e)
+            print("JOB API ERROR:", e)
 
         return JsonResponse({"ok": True, "message": "Application sent"})
 
