@@ -209,9 +209,9 @@ def apply_form(request):
 
     try:
         data = request.POST
+        files = request.FILES
         form_type = data.get("formType", "application")
 
-        # Public logo (works on Render + Gmail)
         LOGO_URL = "https://ca-website-qj5u.onrender.com/static/ca-logo.png"
 
         # =========================================================
@@ -226,23 +226,27 @@ def apply_form(request):
             message = data.get("message", "")
 
             if not name or not email:
-                return JsonResponse({"ok": False, "message": "Name and Email required"}, status=400)
+                return JsonResponse(
+                    {"ok": False, "message": "Name and Email required"}, status=400
+                )
 
             html_body = f"""
-<div style="background:#f1f3f6;padding:12px;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:10px;border:1px solid #d7dce2;">
+<div style="background:#e9eef5;padding:22px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:auto;background:#ffffff;border-radius:14px;border:1px solid #d7dce2;">
 
     <tr>
-      <td style="background:#0A1A44;padding:18px 16px;border-radius:10px 10px 0 0;color:#fff;">
+      <td style="background:#0A1A44;padding:20px 18px;border-radius:14px 14px 0 0;color:#fff;">
         <table width="100%">
           <tr>
             <td width="60">
-              <img src="{LOGO_URL}" style="width:48px;display:block;" alt="Logo">
+              <img src="{LOGO_URL}" style="width:54px;display:block;" alt="Logo">
             </td>
+
             <td align="center" style="font-family:Arial,sans-serif;">
-              <div style="font-size:17px;font-weight:700;">Pavan Kalyan & Associates</div>
-              <div style="font-size:12px;opacity:.9;">Contact Enquiry</div>
+              <div style="font-size:20px;font-weight:800;">Pavan Kalyan & Associates</div>
+              <div style="font-size:13px;opacity:.9;">Contact Enquiry</div>
             </td>
+
             <td width="60">&nbsp;</td>
           </tr>
         </table>
@@ -250,22 +254,21 @@ def apply_form(request):
     </tr>
 
     <tr>
-      <td style="padding:16px;font-family:Arial,sans-serif;font-size:13px;color:#222;">
-        <h3 style="margin:0 0 10px;color:#0A1A44;">Contact Details</h3>
+      <td style="padding:20px 18px;font-family:Arial,sans-serif;font-size:13.5px;color:#222;">
+        <h3 style="margin:0 0 12px;color:#0A1A44;text-align:center;">Contact Details</h3>
 
-        <table width="100%" style="line-height:1.6;">
+        <table width="100%" style="line-height:1.7;">
           <tr><td><b>Name:</b></td><td>{name}</td></tr>
           <tr><td><b>Email:</b></td><td>{email}</td></tr>
           <tr><td><b>Mobile:</b></td><td>{number}</td></tr>
           <tr><td><b>City:</b></td><td>{city}</td></tr>
           <tr><td><b>Message:</b></td><td>{message}</td></tr>
         </table>
-
       </td>
     </tr>
 
     <tr>
-      <td style="background:#f3f5f9;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 10px 10px;">
+      <td style="background:#f5f7fb;padding:14px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
         Sent to HR: {settings.HR_EMAIL}<br>
         © Pavan Kalyan & Associates — Chartered Accountants
       </td>
@@ -295,11 +298,10 @@ def apply_form(request):
                 "https://api.sendgrid.com/v3/mail/send",
                 json=payload,
                 headers={
-                    # 🔥 Use Gmail app password (already in settings)
-                    "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
+                    "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
                     "Content-Type": "application/json",
                 },
-                timeout=10,
+                timeout=15,
             )
 
             return JsonResponse({"ok": True, "message": "Message sent"})
@@ -322,26 +324,33 @@ def apply_form(request):
         experienceMonth = data.get("experienceMonth", "")
 
         portfolio = data.get("portfolio", "")
+        
         comments = data.get("comments", "")
 
         if not all([first, last, email, mobile, position]):
-            return JsonResponse({"ok": False, "message": "Missing required fields"}, status=400)
+            return JsonResponse(
+                {"ok": False, "message": "Missing required fields"}, status=400
+            )
+
+        # ----- EMAIL TEMPLATE -----
 
         html_body = f"""
-<div style="background:#f1f3f6;padding:12px;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:10px;border:1px solid #d7dce2;">
+<div style="background:#e9eef5;padding:22px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:auto;background:#ffffff;border-radius:14px;border:1px solid #d7dce2;">
 
     <tr>
-      <td style="background:#0A1A44;padding:18px 16px;border-radius:10px 10px 0 0;color:#fff;">
+      <td style="background:#0A1A44;padding:20px 18px;border-radius:14px 14px 0 0;color:#fff;">
         <table width="100%">
           <tr>
             <td width="60">
-              <img src="{LOGO_URL}" style="width:48px;display:block;" alt="Logo">
+              <img src="{LOGO_URL}" style="width:54px;display:block;" alt="Logo">
             </td>
+
             <td align="center" style="font-family:Arial,sans-serif;">
-              <div style="font-size:17px;font-weight:700;">Pavan Kalyan & Associates</div>
-              <div style="font-size:12px;opacity:.9;">Job Application</div>
+              <div style="font-size:20px;font-weight:800;">Pavan Kalyan & Associates</div>
+              <div style="font-size:13px;opacity:.9;">Job Application</div>
             </td>
+
             <td width="60">&nbsp;</td>
           </tr>
         </table>
@@ -349,10 +358,11 @@ def apply_form(request):
     </tr>
 
     <tr>
-      <td style="padding:16px;font-family:Arial,sans-serif;font-size:13px;color:#222;">
+      <td style="padding:20px 18px;font-family:Arial,sans-serif;font-size:13.5px;color:#222;">
 
-        <h3 style="color:#0A1A44;margin:0 0 8px;">Personal Details</h3>
-        <table width="100%" style="line-height:1.6;">
+        <h3 style="color:#0A1A44;margin:0 0 10px;text-align:center;">Personal Details</h3>
+
+        <table width="100%" style="line-height:1.7;">
           <tr><td><b>Name:</b></td><td>{first} {last}</td></tr>
           <tr><td><b>Email:</b></td><td>{email}</td></tr>
           <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
@@ -362,8 +372,9 @@ def apply_form(request):
 
         <br>
 
-        <h3 style="color:#0A1A44;margin:0 0 8px;">Professional Details</h3>
-        <table width="100%" style="line-height:1.6;">
+        <h3 style="color:#0A1A44;margin:0 0 10px;text-align:center;">Professional Details</h3>
+
+        <table width="100%" style="line-height:1.7;">
           <tr><td><b>Position:</b></td><td>{position}</td></tr>
           <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
           <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
@@ -372,17 +383,26 @@ def apply_form(request):
 
         <br>
 
-        <h3 style="color:#0A1A44;margin:0 0 8px;">Additional Details</h3>
-        <table width="100%" style="line-height:1.6;">
+        <h3 style="color:#0A1A44;margin:0 0 10px;text-align:center;">Additional Details</h3>
+
+        <table width="100%" style="line-height:1.7;">
           <tr><td><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
           <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
+        </table>
+
+        <br>
+
+        <h3 style="color:#0A1A44;margin:0 0 10px;text-align:center;">📎 Attachments</h3>
+
+        <table width="100%" style="line-height:1.7;">
+          <tr><td>The applicant’s resume is attached with this email.</td></tr>
         </table>
 
       </td>
     </tr>
 
     <tr>
-      <td style="background:#f3f5f9;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 10px 10px;">
+      <td style="background:#f5f7fb;padding:14px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
         Sent to HR: {settings.HR_EMAIL}<br>
         © Pavan Kalyan & Associates — Chartered Accountants
       </td>
@@ -391,6 +411,21 @@ def apply_form(request):
   </table>
 </div>
 """
+
+        # ----- HANDLE RESUME ATTACHMENT -----
+
+        attachments = []
+
+        if "resume" in files:
+            resume = files["resume"]
+            file_content = base64.b64encode(resume.read()).decode()
+
+            attachments.append({
+                "content": file_content,
+                "type": resume.content_type,
+                "filename": resume.name,
+                "disposition": "attachment"
+            })
 
         payload = {
             "personalizations": [{
@@ -406,16 +441,17 @@ def apply_form(request):
                 {"type": "text/plain", "value": f"Job application from {first} {last}"},
                 {"type": "text/html", "value": html_body},
             ],
+            "attachments": attachments if attachments else None,
         }
 
         requests.post(
             "https://api.sendgrid.com/v3/mail/send",
             json=payload,
             headers={
-                "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
+                "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
                 "Content-Type": "application/json",
             },
-            timeout=10,
+            timeout=15,
         )
 
         return JsonResponse({"ok": True, "message": "Application sent"})
