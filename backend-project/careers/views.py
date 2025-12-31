@@ -244,7 +244,7 @@ def apply_form(request):
     <tr>
       <td align="center" style="padding:26px 10px;">
 
-        <table cellpadding="0" cellspacing="0" width="100%" style="max-width:820px;background:#ffffff;border-radius:16px;border:1px solid #d7dce2;">
+        <table cellpadding="0" cellspacing="0" width="100%" style="max-width:920px;background:#ffffff;border-radius:16px;border:1px solid #d7dce2;">
 
           <tr>
             <td style="background:#0A1A44;padding:26px 22px;border-radius:16px 16px 0 0;color:#fff;">
@@ -254,15 +254,17 @@ def apply_form(request):
                   <td width="70" align="left">
                     <img src="{LOGO_URL}" style="width:64px;display:block" alt="Logo">
                   </td>
+                        <td align="center" style="text-align:center; white-space:nowrap;">
 
-                  <td align="center">
-                    <div style="font-size:22px;font-weight:900;">
-                      Pavan Kalyan & Associates
-                    </div>
-                    <div style="font-size:13px;opacity:.9;">
-                      Contact Enquiry
-                    </div>
-                  </td>
+                        <div style="font-size:22px;font-weight:900; letter-spacing:.3px;">
+                            Pavan Kalyan & Associates
+                        </div>
+
+                        <div style="font-size:13px;opacity:.9; margin-top:2px;">
+                            Contact Enquiry
+                        </div>
+
+                        </td>
 
                   <td width="70">&nbsp;</td>
 
