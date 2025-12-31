@@ -201,10 +201,6 @@ def live_news(request):
 
     return JsonResponse(final)
 
-
-# =========================================================
-# APPLY FORM — SENDGRID API
-# =========================================================
 @csrf_exempt
 def apply_form(request):
 
@@ -215,14 +211,12 @@ def apply_form(request):
         data = request.POST
         form_type = data.get("formType", "application")
 
-        # -------------------------------------------------------
-        # PUBLIC LOGO (DO NOT USE BASE64 — EMAIL CLIENTS BLOCK IT)
-        # -------------------------------------------------------
+        # PUBLIC LOGO PATH (works everywhere)
         LOGO_URL = "https://ca-website-qj5u.onrender.com/static/ca-logo.png"
 
-        # =======================================================
+        # =========================================================
         # CONTACT FORM
-        # =======================================================
+        # =========================================================
         if form_type == "contact":
 
             name = data.get("name", "")
@@ -235,25 +229,25 @@ def apply_form(request):
                 return JsonResponse({"ok": False, "message": "Name and Email required"}, status=400)
 
             html_body = f"""
-<div style='background:#eef2f7; padding:24px; font-family:Arial, Helvetica, sans-serif;'>
+<div style='background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
 
-<table align='center' width='640' cellpadding='0' cellspacing='0'
-style='background:#ffffff; border-radius:14px; border:1px solid #d9dfe7;
-box-shadow:0 10px 24px rgba(0,0,0,.08);'>
+<table align='center' width='600' cellpadding='0' cellspacing='0'
+style='background:#ffffff; border-radius:12px; border:1px solid #d7dce2;
+box-shadow:0 6px 18px rgba(0,0,0,.08);'>
 
 <tr>
-<td style='padding:22px 24px; background:#0A1A44; border-radius:14px 14px 0 0;'>
+<td style='background:#0A1A44; padding:20px 18px; border-radius:12px 12px 0 0;'>
   <table width='100%' cellpadding='0' cellspacing='0'>
 
     <tr>
 
       <td width='70' align='left'>
-        <img src="{LOGO_URL}" style='width:58px; display:block;' alt="Logo">
+        <img src="{LOGO_URL}" style='width:55px; display:block;' alt="Logo">
       </td>
 
       <td align='center' style='color:#fff;'>
-        <div style='font-size:20px; font-weight:700;'>Pavan Kalyan & Associates</div>
-        <div style='font-size:13px; opacity:.9;'>Contact Enquiry</div>
+        <div style='font-size:18px; font-weight:700;'>Pavan Kalyan & Associates</div>
+        <div style='font-size:12px; opacity:.9;'>Contact Enquiry</div>
       </td>
 
       <td width='70'>&nbsp;</td>
@@ -265,9 +259,9 @@ box-shadow:0 10px 24px rgba(0,0,0,.08);'>
 </tr>
 
 <tr>
-<td style='padding:20px; font-size:14px;'>
+<td style='padding:18px; font-size:14px;'>
 
-<h3 style='color:#0A1A44;'>Contact Details</h3>
+<h3 style='margin:0 0 8px 0; color:#0A1A44;'>Contact Details</h3>
 
 <table width='100%' style='line-height:1.6; font-size:13px;'>
 <tr><td><b>Name:</b></td><td>{name}</td></tr>
@@ -281,8 +275,8 @@ box-shadow:0 10px 24px rgba(0,0,0,.08);'>
 </tr>
 
 <tr>
-<td style='background:#f3f5f9; padding:14px; text-align:center; font-size:12px;
-border-radius:0 0 14px 14px; color:#777;'>
+<td style='background:#f3f5f9; padding:12px; text-align:center; font-size:12px;
+border-radius:0 0 12px 12px; color:#666;'>
 Sent to HR: {settings.HR_EMAIL}<br>
 © Pavan Kalyan & Associates — Chartered Accountants
 </td>
@@ -313,10 +307,9 @@ Sent to HR: {settings.HR_EMAIL}<br>
 
             return JsonResponse({"ok": True, "message": "Message sent"})
 
-        # =======================================================
-        # JOB APPLICATION FORM
-        # =======================================================
-
+        # =========================================================
+        # JOB APPLICATION
+        # =========================================================
         first = data.get("firstName", "")
         last = data.get("lastName", "")
         email = data.get("email", "")
@@ -337,25 +330,25 @@ Sent to HR: {settings.HR_EMAIL}<br>
             return JsonResponse({"ok": False, "message": "Missing required fields"}, status=400)
 
         html_body = f"""
-<div style='background:#eef2f7; padding:24px; font-family:Arial, Helvetica, sans-serif;'>
+<div style='background:#f1f3f6; padding:20px; font-family:Arial, sans-serif;'>
 
-<table align='center' width='640' cellpadding='0' cellspacing='0'
-style='background:#ffffff; border-radius:14px; border:1px solid #d9dfe7;
-box-shadow:0 10px 24px rgba(0,0,0,.08);'>
+<table align='center' width='600' cellpadding='0' cellspacing='0'
+style='background:#ffffff; border-radius:12px; border:1px solid #d7dce2;
+box-shadow:0 6px 18px rgba(0,0,0,.08);'>
 
 <tr>
-<td style='padding:22px 24px; background:#0A1A44; border-radius:14px 14px 0 0;'>
+<td style='background:#0A1A44; padding:20px 18px; border-radius:12px 12px 0 0;'>
   <table width='100%' cellpadding='0' cellspacing='0'>
 
     <tr>
 
       <td width='70' align='left'>
-        <img src="{LOGO_URL}" style='width:58px; display:block;' alt="Logo">
+        <img src="{LOGO_URL}" style='width:55px; display:block;' alt="Logo">
       </td>
 
       <td align='center' style='color:#fff;'>
-        <div style='font-size:20px; font-weight:700;'>Pavan Kalyan & Associates</div>
-        <div style='font-size:13px; opacity:.9;'>Job Application</div>
+        <div style='font-size:18px; font-weight:700;'>Pavan Kalyan & Associates</div>
+        <div style='font-size:12px; opacity:.9;'>Job Application</div>
       </td>
 
       <td width='70'>&nbsp;</td>
@@ -367,7 +360,7 @@ box-shadow:0 10px 24px rgba(0,0,0,.08);'>
 </tr>
 
 <tr>
-<td style='padding:20px; font-size:14px;'>
+<td style='padding:18px; font-size:14px;'>
 
 <h3 style='color:#0A1A44;'>👤 Personal Details</h3>
 <table width='100%' style='font-size:13px; line-height:1.6;'>
@@ -400,8 +393,8 @@ box-shadow:0 10px 24px rgba(0,0,0,.08);'>
 </tr>
 
 <tr>
-<td style='background:#f3f5f9; padding:14px; text-align:center; font-size:12px;
-border-radius:0 0 14px 14px; color:#777;'>
+<td style='background:#f3f5f9; padding:12px; text-align:center; font-size:12px;
+border-radius:0 0 12px 12px; color:#666;'>
 Sent to HR: {settings.HR_EMAIL}<br>
 © Pavan Kalyan & Associates — Chartered Accountants
 </td>
