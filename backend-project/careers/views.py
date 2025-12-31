@@ -206,9 +206,8 @@ def live_news(request):
 # APPLY FORM — SENDGRID API
 # =========================================================
 
-@@csrf_exempt
+@csrf_exempt
 def apply_form(request):
-
     if request.method != "POST":
         return JsonResponse({"ok": False, "message": "Invalid request"}, status=405)
 
@@ -216,9 +215,7 @@ def apply_form(request):
         data = request.POST
         form_type = data.get("formType", "application")
 
-        # =========================
-        # READ LOGO (BASE64)
-        # =========================
+        # ---- read logo (base64) ----
         LOGO64 = ""
         try:
             logo_path = Path(settings.BASE_DIR) / "backend" / "static" / "ca-logo.png"
@@ -227,11 +224,10 @@ def apply_form(request):
         except Exception as e:
             print("LOGO ERROR:", e)
 
-        # =========================================================
+        # =====================================================
         # CONTACT FORM
-        # =========================================================
+        # =====================================================
         if form_type == "contact":
-
             name = data.get("name", "")
             number = data.get("number", "")
             email = data.get("email", "")
@@ -242,68 +238,63 @@ def apply_form(request):
                 return JsonResponse({"ok": False, "message": "Name and Email required"}, status=400)
 
             html_body = f"""
-<div style='background:#eef2f7; padding:24px; font-family:Arial, Helvetica, sans-serif;'>
+<table width="100%" style="background:#eef2f7;padding:24px;font-family:Arial,Helvetica,sans-serif;">
+<tr>
+<td align="center">
 
-<table align='center' width='640' cellpadding='0' cellspacing='0'
-style='background:#ffffff; border-radius:14px; border:1px solid #d9dfe7;
-box-shadow:0 10px 24px rgba(0,0,0,.08);'>
+<table width="650" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:14px;border:1px solid #d9dfe7;box-shadow:0 6px 20px rgba(0,0,0,.08);">
 
 <tr>
-<td style='padding:22px 24px; background:#0A1A44; border-radius:14px 14px 0 0;'>
-  <table width='100%'>
+<td style="background:#0A1A44;padding:18px 22px;border-radius:14px 14px 0 0;">
 
-    <tr>
+<table width="100%">
+<tr>
+<td width="70" align="left">
+<img src="data:image/png;base64,{LOGO64}" style="width:58px;display:block;">
+</td>
 
-      <td width='80' align='left'>
-        <img src="data:image/png;base64,{LOGO64}" style='width:60px; display:block;'>
-      </td>
+<td align="center" style="color:#fff;">
+<div style="font-size:20px;font-weight:700;">Pavan Kalyan & Associates</div>
+<div style="font-size:13px;opacity:.85;">Contact Enquiry</div>
+</td>
 
-      <td align='center' style='color:#fff;'>
-        <div style='font-size:20px; font-weight:700;'>Pavan Kalyan & Associates</div>
-        <div style='font-size:13px; opacity:.9;'>Contact Enquiry</div>
-      </td>
+<td width="70"></td>
+</tr>
+</table>
 
-      <td width='80'>&nbsp;</td>
-
-    </tr>
-
-  </table>
 </td>
 </tr>
 
 <tr>
-<td style='padding:22px; font-size:14px; color:#222;'>
+<td style="padding:22px;font-size:14px;color:#222;">
+<h3 style="margin:0 0 10px 0;color:#0A1A44;">Contact Details</h3>
 
-<h3 style='margin:0 0 10px 0; color:#0A1A44;'>Contact Details</h3>
-
-<table width='100%' style='line-height:1.6;'>
+<table width="100%" style="line-height:1.6;">
 <tr><td><b>Name:</b></td><td>{name}</td></tr>
 <tr><td><b>Email:</b></td><td>{email}</td></tr>
 <tr><td><b>Mobile:</b></td><td>{number}</td></tr>
 <tr><td><b>City:</b></td><td>{city}</td></tr>
 <tr><td><b>Message:</b></td><td>{message}</td></tr>
 </table>
-
 </td>
 </tr>
 
 <tr>
-<td style='background:#f3f5f9; padding:14px; text-align:center; font-size:12px;
-border-radius:0 0 14px 14px; color:#777;'>
+<td style="background:#f4f6fb;padding:14px;text-align:center;font-size:12px;color:#777;border-radius:0 0 14px 14px;">
 Sent to HR: {settings.HR_EMAIL}<br>
 © Pavan Kalyan & Associates
 </td>
 </tr>
 
 </table>
-</div>
+
+</td>
+</tr>
+</table>
 """
 
             payload = {
-                "personalizations": [{
-                    "to": [{"email": settings.HR_EMAIL}],
-                    "subject": f"Contact Enquiry — {name}",
-                }],
+                "personalizations": [{"to": [{"email": settings.HR_EMAIL}], "subject": f"Contact Enquiry — {name}"}],
                 "from": {"email": settings.DEFAULT_FROM_EMAIL},
                 "content": [{"type": "text/html", "value": html_body}],
             }
@@ -311,19 +302,15 @@ Sent to HR: {settings.HR_EMAIL}<br>
             requests.post(
                 "https://api.sendgrid.com/v3/mail/send",
                 json=payload,
-                headers={
-                    "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
-                    "Content-Type": "application/json",
-                },
+                headers={"Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}", "Content-Type": "application/json"},
                 timeout=10,
             )
 
             return JsonResponse({"ok": True, "message": "Message sent"})
 
-        # =========================================================
-        # JOB APPLICATION FORM
-        # =========================================================
-
+        # =====================================================
+        # JOB APPLICATION
+        # =====================================================
         first = data.get("firstName", "")
         last = data.get("lastName", "")
         email = data.get("email", "")
@@ -344,40 +331,36 @@ Sent to HR: {settings.HR_EMAIL}<br>
             return JsonResponse({"ok": False, "message": "Missing required fields"}, status=400)
 
         html_body = f"""
-<div style='background:#eef2f7; padding:24px; font-family:Arial, Helvetica, sans-serif;'>
+<table width="100%" style="background:#eef2f7;padding:24px;font-family:Arial,Helvetica,sans-serif;">
+<tr>
+<td align="center">
 
-<table align='center' width='640' cellpadding='0' cellspacing='0'
-style='background:#ffffff; border-radius:14px; border:1px solid #d9dfe7;
-box-shadow:0 10px 24px rgba(0,0,0,.08);'>
+<table width="650" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:14px;border:1px solid #d9dfe7;box-shadow:0 6px 20px rgba(0,0,0,.08);">
 
 <tr>
-<td style='padding:22px 24px; background:#0A1A44; border-radius:14px 14px 0 0;'>
-  <table width='100%'>
+<td style="background:#0A1A44;padding:18px 22px;border-radius:14px 14px 0 0;">
+<table width="100%">
+<tr>
+<td width="70" align="left">
+<img src="data:image/png;base64,{LOGO64}" style="width:58px;display:block;">
+</td>
 
-    <tr>
+<td align="center" style="color:#fff;">
+<div style="font-size:20px;font-weight:700;">Pavan Kalyan & Associates</div>
+<div style="font-size:13px;opacity:.85;">Job Application</div>
+</td>
 
-      <td width='80' align='left'>
-        <img src="data:image/png;base64,{LOGO64}" style='width:60px; display:block;'>
-      </td>
-
-      <td align='center' style='color:#fff;'>
-        <div style='font-size:20px; font-weight:700;'>Pavan Kalyan & Associates</div>
-        <div style='font-size:13px; opacity:.9;'>Job Application</div>
-      </td>
-
-      <td width='80'>&nbsp;</td>
-
-    </tr>
-
-  </table>
+<td width="70"></td>
+</tr>
+</table>
 </td>
 </tr>
 
 <tr>
-<td style='padding:20px; font-size:14px;'>
+<td style="padding:20px;font-size:14px;">
 
-<h3 style='color:#0A1A44;'>👤 Personal Details</h3>
-<table width='100%' style='font-size:13px; line-height:1.6;'>
+<h3 style="color:#0A1A44;">👤 Personal Details</h3>
+<table width="100%" style="line-height:1.6;font-size:13px;">
 <tr><td><b>Name:</b></td><td>{first} {last}</td></tr>
 <tr><td><b>Email:</b></td><td>{email}</td></tr>
 <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
@@ -387,18 +370,18 @@ box-shadow:0 10px 24px rgba(0,0,0,.08);'>
 
 <br>
 
-<h3 style='color:#0A1A44;'>💼 Professional Details</h3>
-<table width='100%' style='font-size:13px; line-height:1.6;'>
+<h3 style="color:#0A1A44;">💼 Professional Details</h3>
+<table width="100%" style="line-height:1.6;font-size:13px;">
 <tr><td><b>Position:</b></td><td>{position}</td></tr>
 <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
 <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
-<tr><td><b>Experience:</b></td><td>{experienceYear} yrs {experienceMonth} months</td></tr>
+<tr><td><b>Experience:</b></td><td>{experienceYear or "0"} yrs {experienceMonth or "0"} months</td></tr>
 </table>
 
 <br>
 
-<h3 style='color:#0A1A44;'>📝 Additional Details</h3>
-<table width='100%' style='font-size:13px; line-height:1.6;'>
+<h3 style="color:#0A1A44;">📝 Additional Details</h3>
+<table width="100%" style="line-height:1.6;font-size:13px;">
 <tr><td><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
 <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
 </table>
@@ -407,22 +390,21 @@ box-shadow:0 10px 24px rgba(0,0,0,.08);'>
 </tr>
 
 <tr>
-<td style='background:#f3f5f9; padding:14px; text-align:center; font-size:12px;
-border-radius:0 0 14px 14px; color:#777;'>
+<td style="background:#f4f6fb;padding:14px;text-align:center;font-size:12px;color:#777;border-radius:0 0 14px 14px;">
 Sent to HR: {settings.HR_EMAIL}<br>
 © Pavan Kalyan & Associates
 </td>
 </tr>
 
 </table>
-</div>
+
+</td>
+</tr>
+</table>
 """
 
         payload = {
-            "personalizations": [{
-                "to": [{"email": settings.HR_EMAIL}],
-                "subject": f"Job Application — {first} {last}",
-            }],
+            "personalizations": [{"to": [{"email": settings.HR_EMAIL}], "subject": f"Job Application — {first} {last}"}],
             "from": {"email": settings.DEFAULT_FROM_EMAIL},
             "content": [{"type": "text/html", "value": html_body}],
         }
@@ -430,10 +412,7 @@ Sent to HR: {settings.HR_EMAIL}<br>
         requests.post(
             "https://api.sendgrid.com/v3/mail/send",
             json=payload,
-            headers={
-                "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
-                "Content-Type": "application/json",
-            },
+            headers={"Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}", "Content-Type": "application/json"},
             timeout=10,
         )
 
