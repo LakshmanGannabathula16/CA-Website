@@ -98,6 +98,10 @@ HR_EMAIL = os.getenv("HR_EMAIL")
 DEFAULT_FROM_EMAIL = FROM_EMAIL
 EMAIL_TIMEOUT = 5
 
+# Use SendGrid key (if set) OR fall back to EMAIL_HOST_PASSWORD
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY") or os.getenv("EMAIL_HOST_PASSWORD")
+
+
 # ---------- LANGUAGE TIME ----------
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"

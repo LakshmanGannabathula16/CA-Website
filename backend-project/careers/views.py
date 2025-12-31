@@ -469,7 +469,7 @@ def apply_form(request):
             "https://api.sendgrid.com/v3/mail/send",
             json=payload,
             headers={
-                "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
+               "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
                 "Content-Type": "application/json",
             },
             timeout=15,
