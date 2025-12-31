@@ -211,6 +211,7 @@ def apply_form(request):
         data = request.POST
         form_type = data.get("formType", "application")
 
+        # Public logo (works on Render + Gmail)
         LOGO_URL = "https://ca-website-qj5u.onrender.com/static/ca-logo.png"
 
         # =========================================================
@@ -294,7 +295,8 @@ def apply_form(request):
                 "https://api.sendgrid.com/v3/mail/send",
                 json=payload,
                 headers={
-                    "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+                    # 🔥 Use Gmail app password (already in settings)
+                    "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
                     "Content-Type": "application/json",
                 },
                 timeout=10,
@@ -376,15 +378,6 @@ def apply_form(request):
           <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
         </table>
 
-        <br>
-
-        <h3 style="color:#0A1A44;margin:0 0 8px;">📎 Attachments</h3>
-        <table width="100%" style="line-height:1.6;font-size:13px;">
-          <tr>
-            <td>The applicant’s resume is attached with this email.</td>
-          </tr>
-        </table>
-
       </td>
     </tr>
 
@@ -419,7 +412,7 @@ def apply_form(request):
             "https://api.sendgrid.com/v3/mail/send",
             json=payload,
             headers={
-                "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+                "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
                 "Content-Type": "application/json",
             },
             timeout=10,
