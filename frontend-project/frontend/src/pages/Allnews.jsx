@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 const API_URL =
-    window.location.hostname === "localhost"
-        ? "http://127.0.0.1:8000/api/live-news/"
-        : "https://ca-website-qj5u.onrender.com/api/live-news/";
+    "https://ca-website-qj5u.onrender.com/api/live-news/";
 
 const PAGE_SIZE = 10;
 
