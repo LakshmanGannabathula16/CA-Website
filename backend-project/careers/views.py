@@ -235,7 +235,7 @@ def apply_form(request):
                 LOGO64 = base64.b64encode(raw).decode()
 
         except Exception as e:
-        print("LOGO ERROR:", e)
+            print("LOGO ERROR:", e)
 
 
         # =====================================================
