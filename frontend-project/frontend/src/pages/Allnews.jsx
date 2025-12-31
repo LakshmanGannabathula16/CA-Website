@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-const API_URL = "http://127.0.0.1:8000/api/live-news/";
+const API_URL =
+    window.location.hostname === "localhost"
+        ? "http://127.0.0.1:8000/api/live-news/"
+        : "https://ca-website-qj5u.onrender.com/api/live-news/";
+
 const PAGE_SIZE = 10;
 
 function autoCategorize(title = "") {
@@ -108,7 +112,7 @@ export default function AllNews() {
                 {/* SEARCH + SORT */}
                 <div className="bg-white shadow rounded-2xl p-3 mb-5 flex flex-wrap gap-3 items-center justify-between">
                     <div className="relative flex-1 min-w-[220px]">
-                        <span className="absolute left-4 top-2.5 text-gray-500">🔍</span>
+                        <span className="absolute right-4 top-2.5 text-gray-500">🔍</span>
 
                         <input
                             value={query}
