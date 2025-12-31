@@ -200,6 +200,12 @@ def live_news(request):
     _LIVE_NEWS_CACHE["data"] = final
 
     return JsonResponse(final)
+import base64
+import requests
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 
 @csrf_exempt
 def apply_form(request):
@@ -232,30 +238,42 @@ def apply_form(request):
 
             html_body = f"""
 <div style="background:#e9eef5;padding:22px;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:auto;background:#ffffff;border-radius:14px;border:1px solid #d7dce2;">
+  <table width="100%" cellpadding="0" cellspacing="0"
+         style="max-width:700px;margin:auto;background:#ffffff;border-radius:14px;border:1px solid #d7dce2;">
 
+    <!-- HEADER -->
     <tr>
       <td style="background:#0A1A44;padding:20px 18px;border-radius:14px 14px 0 0;color:#fff;">
-        <table width="100%">
+        <table width="100%" cellpadding="0" cellspacing="0">
           <tr>
-            <td width="60">
-              <img src="{LOGO_URL}" style="width:54px;display:block;" alt="Logo">
+
+            <td width="70" valign="middle">
+              <img src="{LOGO_URL}" style="width:58px;display:block" alt="Logo">
             </td>
 
-            <td align="center" style="font-family:Arial,sans-serif;">
-              <div style="font-size:20px;font-weight:800;">Pavan Kalyan & Associates</div>
-              <div style="font-size:13px;opacity:.9;">Contact Enquiry</div>
+            <td align="center" valign="middle" style="font-family:Arial,sans-serif;">
+              <div style="font-size:20px;font-weight:800;">
+                Pavan Kalyan & Associates
+              </div>
+              <div style="font-size:13px;opacity:.9;">
+                Contact Enquiry
+              </div>
             </td>
 
-            <td width="60">&nbsp;</td>
+            <td width="70">&nbsp;</td>
+
           </tr>
         </table>
       </td>
     </tr>
 
+    <!-- BODY -->
     <tr>
       <td style="padding:20px 18px;font-family:Arial,sans-serif;font-size:13.5px;color:#222;">
-        <h3 style="margin:0 0 12px;color:#0A1A44;text-align:center;">Contact Details</h3>
+
+        <h3 style="margin:0 0 12px;color:#0A1A44;text-align:center;">
+          Contact Details
+        </h3>
 
         <table width="100%" style="line-height:1.7;">
           <tr><td><b>Name:</b></td><td>{name}</td></tr>
@@ -264,9 +282,11 @@ def apply_form(request):
           <tr><td><b>City:</b></td><td>{city}</td></tr>
           <tr><td><b>Message:</b></td><td>{message}</td></tr>
         </table>
+
       </td>
     </tr>
 
+    <!-- FOOTER -->
     <tr>
       <td style="background:#f5f7fb;padding:14px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
         Sent to HR: {settings.HR_EMAIL}<br>
@@ -281,12 +301,9 @@ def apply_form(request):
             payload = {
                 "personalizations": [{
                     "to": [{"email": settings.HR_EMAIL}],
-                    "subject": f"[Website] New contact enquiry — {name}",
+                    "subject": f"[Website] Contact Enquiry — {name}",
                 }],
-                "from": {
-                    "email": settings.DEFAULT_FROM_EMAIL,
-                    "name": "Pavan Kalyan & Associates"
-                },
+                "from": {"email": settings.DEFAULT_FROM_EMAIL},
                 "reply_to": {"email": email},
                 "content": [
                     {"type": "text/plain", "value": f"Contact enquiry from {name}"},
@@ -322,9 +339,7 @@ def apply_form(request):
         lastCompany = data.get("lastCompany", "")
         experienceYear = data.get("experienceYear", "")
         experienceMonth = data.get("experienceMonth", "")
-
         portfolio = data.get("portfolio", "")
-        
         comments = data.get("comments", "")
 
         if not all([first, last, email, mobile, position]):
@@ -332,31 +347,38 @@ def apply_form(request):
                 {"ok": False, "message": "Missing required fields"}, status=400
             )
 
-        # ----- EMAIL TEMPLATE -----
-
         html_body = f"""
 <div style="background:#e9eef5;padding:22px;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:auto;background:#ffffff;border-radius:14px;border:1px solid #d7dce2;">
+  <table width="100%" cellpadding="0" cellspacing="0"
+         style="max-width:700px;margin:auto;background:#ffffff;border-radius:14px;border:1px solid #d7dce2;">
 
+    <!-- HEADER -->
     <tr>
       <td style="background:#0A1A44;padding:20px 18px;border-radius:14px 14px 0 0;color:#fff;">
-        <table width="100%">
+        <table width="100%" cellpadding="0" cellspacing="0">
           <tr>
-            <td width="60">
-              <img src="{LOGO_URL}" style="width:54px;display:block;" alt="Logo">
+
+            <td width="70" valign="middle">
+              <img src="{LOGO_URL}" style="width:58px;display:block" alt="Logo">
             </td>
 
-            <td align="center" style="font-family:Arial,sans-serif;">
-              <div style="font-size:20px;font-weight:800;">Pavan Kalyan & Associates</div>
-              <div style="font-size:13px;opacity:.9;">Job Application</div>
+            <td align="center" valign="middle" style="font-family:Arial,sans-serif;">
+              <div style="font-size:20px;font-weight:800;">
+                Pavan Kalyan & Associates
+              </div>
+              <div style="font-size:13px;opacity:.9;">
+                Job Application
+              </div>
             </td>
 
-            <td width="60">&nbsp;</td>
+            <td width="70">&nbsp;</td>
+
           </tr>
         </table>
       </td>
     </tr>
 
+    <!-- BODY -->
     <tr>
       <td style="padding:20px 18px;font-family:Arial,sans-serif;font-size:13.5px;color:#222;">
 
@@ -395,12 +417,15 @@ def apply_form(request):
         <h3 style="color:#0A1A44;margin:0 0 10px;text-align:center;">📎 Attachments</h3>
 
         <table width="100%" style="line-height:1.7;">
-          <tr><td>The applicant’s resume is attached with this email.</td></tr>
+          <tr>
+            <td>The applicant’s resume is attached with this email.</td>
+          </tr>
         </table>
 
       </td>
     </tr>
 
+    <!-- FOOTER -->
     <tr>
       <td style="background:#f5f7fb;padding:14px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
         Sent to HR: {settings.HR_EMAIL}<br>
@@ -412,8 +437,7 @@ def apply_form(request):
 </div>
 """
 
-        # ----- HANDLE RESUME ATTACHMENT -----
-
+        # ---------- ATTACH RESUME ----------
         attachments = []
 
         if "resume" in files:
@@ -424,18 +448,15 @@ def apply_form(request):
                 "content": file_content,
                 "type": resume.content_type,
                 "filename": resume.name,
-                "disposition": "attachment"
+                "disposition": "attachment",
             })
 
         payload = {
             "personalizations": [{
                 "to": [{"email": settings.HR_EMAIL}],
-                "subject": f"[Website] Job application — {first} {last}",
+                "subject": f"[Website] Job Application — {first} {last}",
             }],
-            "from": {
-                "email": settings.DEFAULT_FROM_EMAIL,
-                "name": "Pavan Kalyan & Associates"
-            },
+            "from": {"email": settings.DEFAULT_FROM_EMAIL},
             "reply_to": {"email": email},
             "content": [
                 {"type": "text/plain", "value": f"Job application from {first} {last}"},
@@ -448,7 +469,7 @@ def apply_form(request):
             "https://api.sendgrid.com/v3/mail/send",
             json=payload,
             headers={
-                "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+                "Authorization": f"Bearer {settings.EMAIL_HOST_PASSWORD}",
                 "Content-Type": "application/json",
             },
             timeout=15,
@@ -459,3 +480,22 @@ def apply_form(request):
     except Exception as e:
         print("APPLY_FORM ERROR:", e)
         return JsonResponse({"ok": False, "message": "Server error"}, status=500)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
