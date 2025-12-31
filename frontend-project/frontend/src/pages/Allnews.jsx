@@ -6,8 +6,10 @@ const PAGE_SIZE = 10;
 function autoCategorize(title = "") {
     const t = title.toLowerCase();
     if (t.includes("gst") || t.includes("cbic")) return "GST";
-    if (t.includes("income tax") || t.includes("tds") || t.includes("itr")) return "Income Tax";
-    if (t.includes("mca") || t.includes("company") || t.includes("corporate")) return "Corporate";
+    if (t.includes("income tax") || t.includes("tds") || t.includes("itr"))
+        return "Income Tax";
+    if (t.includes("mca") || t.includes("company") || t.includes("corporate"))
+        return "Corporate";
     if (t.includes("audit")) return "Corporate";
     return "Other";
 }
@@ -19,7 +21,7 @@ export default function AllNews() {
     const [query, setQuery] = useState("");
     const [category, setCategory] = useState("ALL");
     const [sortType, setSortType] = useState("latest");
-    const [page, setPage] = useState(1);
+    const [visible, setVisible] = useState(PAGE_SIZE);
 
     useEffect(() => {
         let mounted = true;
@@ -38,13 +40,13 @@ export default function AllNews() {
                     date: it.date || it.published || "",
                     source,
                     link: it.link || "",
-                    category: autoCategorize(it.title || "")
+                    category: autoCategorize(it.title || ""),
                 });
 
                 const combined = [
                     ...t.map((i) => normalize(i, "Today")),
                     ...prev.map((i) => normalize(i, "News")),
-                    ...b.map((i) => normalize(i, "Blog"))
+                    ...b.map((i) => normalize(i, "Blog")),
                 ];
 
                 setAllItems(dedupe(combined));
@@ -93,75 +95,90 @@ export default function AllNews() {
         return arr;
     }, [allItems, query, category, sortType]);
 
-    const totalPages = Math.ceil(filtered.length / PAGE_SIZE) || 1;
-    const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    const paginated = filtered.slice(0, visible);
 
     return (
-        <section style={pageBg}>
-            <div className="max-w-6xl mx-auto px-4">
+        <section className="min-h-screen pt-24 bg-gradient-to-r from-[#0A1A44] via-[#1554a1] to-[#22c1e8]">
+            <div className="max-w-5xl mx-auto px-4 text-[#0A1A44]">
+                <h1 className="text-3xl font-extrabold text-white">All News</h1>
+                <p className="text-blue-100 mt-1 mb-6">
+                    Latest CA, GST, Tax & Corporate Updates
+                </p>
 
+                {/* SEARCH + SORT */}
+                <div className="bg-white shadow rounded-2xl p-3 mb-5 flex flex-wrap gap-3 items-center justify-between">
+                    <div className="relative flex-1 min-w-[220px]">
+                        <span className="absolute left-4 top-2.5 text-gray-500">🔍</span>
 
-                <div style={headerRow}>
-                    <div>
-                        <h1 style={titleStyle}>All News</h1>
-                        <p style={subtitleStyle}>Latest CA, GST, Tax & Corporate Updates</p>
+                        <input
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            placeholder="Search news…"
+                            className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:border-[#0A1A44] outline-none text-sm font-medium"
+                        />
                     </div>
 
-
-                    <div style={filterBox}>
-                        <div style={searchWrapper}>
-                            <span style={searchIcon}>🔍</span>
-                            <input
-                                value={query}
-                                onChange={(e) => { setQuery(e.target.value); setPage(1); }}
-                                placeholder="Search news..."
-                                style={searchStyle}
-                            />
-                        </div>
-                        <select
-                            value={sortType}
-                            onChange={(e) => setSortType(e.target.value)}
-                            style={sortDropdown}
-                        >
-                            <option value="latest">Latest → Oldest</option>
-                            <option value="oldest">Oldest → Latest</option>
-                        </select>
-                    </div>
+                    <select
+                        value={sortType}
+                        onChange={(e) => setSortType(e.target.value)}
+                        className="border rounded-full px-4 py-2 text-sm font-semibold"
+                    >
+                        <option value="latest">Latest → Oldest</option>
+                        <option value="oldest">Oldest → Latest</option>
+                    </select>
                 </div>
-                <div style={tabsRow}>
+
+                {/* CATEGORY TABS */}
+                <div className="flex flex-wrap gap-3 mb-5">
                     {["ALL", "GST", "Income Tax", "Corporate", "Other"].map((c) => (
                         <button
                             key={c}
                             onClick={() => setCategory(c)}
-                            style={c === category ? pillActive : pill}
+                            className={`px-4 py-2 rounded-full border text-sm font-bold transition ${category === c
+                                ? "bg-[#0A1A44] text-white border-[#0A1A44]"
+                                : "bg-white border-gray-300 hover:bg-gray-100"
+                                }`}
                         >
                             {c}
                         </button>
                     ))}
                 </div>
-                <div style={listContainer}>
+
+                {/* LIST */}
+                <div className="space-y-2">
                     {loading ? (
-                        <div style={loadingBox}>Loading…</div>
+                        <div className="text-center text-white py-10">Loading…</div>
                     ) : paginated.length === 0 ? (
-                        <div style={loadingBox}>No results found.</div>
+                        <div className="text-center text-white py-10">
+                            No news found.
+                        </div>
                     ) : (
                         paginated.map((it, idx) => (
-                            <article key={idx} style={newsCard}
-                                onMouseEnter={(e) => Object.assign(e.currentTarget.style, newsCardHover)}
-                                onMouseLeave={(e) => Object.assign(e.currentTarget.style, newsCard)}
+                            <article
+                                key={idx}
+                                className="bg-white px-4 py-3 rounded-xl border shadow flex items-start justify-between gap-3 hover:-translate-y-0.5 transition"
                             >
-                                <div>
-                                    <h3 style={newsTitle}>{it.title}</h3>
+                                <div className="flex-1">
+                                    <h3 className="font-extrabold text-[15px] leading-snug mb-1">
+                                        {it.title}
+                                    </h3>
 
-                                    <div style={metaRow}>
-                                        <span style={metaSource}>{it.source}</span>
-                                        <span style={metaCat}>{it.category}</span>
-                                        <span style={metaDate}>{new Date(it.date).toLocaleString()}</span>
+                                    <div className="text-xs flex flex-wrap gap-3 text-gray-700">
+                                        <span className="font-bold text-[#0A1A44]">
+                                            {it.source}
+                                        </span>
+                                        <span>{it.category}</span>
+                                        <span>{new Date(it.date).toLocaleString()}</span>
                                     </div>
                                 </div>
 
                                 {it.link && (
-                                    <a href={it.link} target="_blank" rel="noreferrer" style={readBtn}>
+                                    <a
+                                        href={it.link}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="bg-red-100 text-red-700 px-3 py-1 rounded-lg font-bold text-sm whitespace-nowrap"
+                                    >
                                         Read
                                     </a>
                                 )}
@@ -170,117 +187,18 @@ export default function AllNews() {
                     )}
                 </div>
 
+                {/* LOAD MORE */}
+                {visible < filtered.length && (
+                    <div className="text-center mt-6">
+                        <button
+                            onClick={() => setVisible((v) => v + PAGE_SIZE)}
+                            className="px-6 py-2 bg-white border rounded-full font-bold"
+                        >
+                            Load More
+                        </button>
+                    </div>
+                )}
             </div>
         </section>
     );
 }
-
-
-const pageBg = {
-    background: "linear-gradient(90deg, #0A1A44, #1554a1, #22c1e8)",
-    minHeight: "100vh",
-    paddingTop: 100,
-    color: "#0A1A44",
-};
-
-
-
-const headerRow = { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" };
-const titleStyle = { fontSize: 32, color: "#fff", fontWeight: 900 };
-const subtitleStyle = { color: "#dceafe", marginTop: 4 };
-
-
-const filterBox = {
-    display: "flex",
-    gap: 16,
-    alignItems: "center",
-    padding: "12px 18px",
-    background: "#ffffff",
-    borderRadius: 12,
-    border: "1px solid #d0d7e5",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-};
-
-
-const searchWrapper = { position: "relative", display: "flex", alignItems: "center" };
-const searchIcon = { position: "absolute", left: 10, fontSize: 16, color: "#6b7280" };
-
-const searchStyle = {
-    padding: "10px 14px 10px 38px",
-    borderRadius: 8,
-    border: "2px solid #4b5563",
-    background: "#fff",
-    color: "#111",
-    fontWeight: 600,
-    minWidth: 260,
-};
-
-
-const sortDropdown = {
-    padding: "10px 14px",
-    borderRadius: 8,
-    border: "2px solid #4b5563",
-    background: "#fff",
-    color: "#111",
-    fontWeight: 700,
-    cursor: "pointer",
-};
-
-const tabsRow = { marginTop: 18, marginBottom: 18, display: "flex", gap: 10, flexWrap: "wrap" };
-
-const pill = {
-    padding: "8px 14px",
-    borderRadius: 999,
-    background: "#ffffff",
-    border: "1px solid #d0d7e5",
-    cursor: "pointer",
-    color: "#0A1A44",
-    fontWeight: 700,
-};
-
-const pillActive = {
-    ...pill,
-    background: "#0A1A44",
-    color: "#fff",
-    border: "1px solid #0A1A44",
-};
-
-
-const listContainer = { display: "grid", gap: 14 };
-
-const newsCard = {
-    background: "#ffffff",
-    padding: 18,
-    borderRadius: 12,
-    border: "1px solid #d0d7e5",
-    color: "#0A1A44",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-    transition: "0.25s",
-};
-
-const newsCardHover = {
-    border: "1px solid #0A1A44",
-    transform: "translateY(-3px)",
-    boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-};
-
-
-const newsTitle = { fontSize: 17, fontWeight: 800 };
-const metaRow = { marginTop: 6, display: "flex", gap: 12, fontSize: 14 };
-const metaSource = { fontWeight: 700, color: "#0A1A44" };
-const metaCat = { color: "#374151" };
-const metaDate = { color: "#475569" };
-
-const readBtn = {
-    background: "#fee2e2",
-    color: "#b91c1c",
-    padding: "8px 12px",
-    borderRadius: 8,
-    fontWeight: 700,
-    textDecoration: "none",
-};
-
-const loadingBox = { padding: 28, textAlign: "center", color: "#fff" };
