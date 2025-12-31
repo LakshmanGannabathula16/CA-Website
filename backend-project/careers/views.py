@@ -216,13 +216,27 @@ def apply_form(request):
         form_type = data.get("formType", "application")
 
         # ---- read logo (base64) ----
+        # LOGO64 = ""
+        # try:
+        #     logo_path = Path(settings.BASE_DIR) / "backend" / "static" / "ca-logo.png"
+        #     with open(logo_path, "rb") as f:
+        #         LOGO64 = base64.b64encode(f.read()).decode()
+        # except Exception as e:
+        #     print("LOGO ERROR:", e)
+        # =========================
+# READ LOGO (BASE64)
+# =========================
         LOGO64 = ""
         try:
             logo_path = Path(settings.BASE_DIR) / "backend" / "static" / "ca-logo.png"
             with open(logo_path, "rb") as f:
-                LOGO64 = base64.b64encode(f.read()).decode()
+                raw = f.read()
+                print("LOGO SIZE:", len(raw))   # DEBUG
+                LOGO64 = base64.b64encode(raw).decode()
+
         except Exception as e:
-            print("LOGO ERROR:", e)
+        print("LOGO ERROR:", e)
+
 
         # =====================================================
         # CONTACT FORM
