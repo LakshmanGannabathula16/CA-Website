@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
+import { API_BASE } from "../api";
 export default function NewsUpdatesSection() {
 
-    const API_URL = "/api/live-news/";
+    const API_URL = `${API_BASE}/api/live-news/`;
 
     const [today, setToday] = useState([]);
     const [previous, setPrevious] = useState([]);

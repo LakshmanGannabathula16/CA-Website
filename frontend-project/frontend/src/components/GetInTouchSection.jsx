@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { API_BASE } from "../api";
 import getInTouchImg from "../assets/getintouch3.png";
 
 export default function GetInTouchSection() {
@@ -69,11 +70,10 @@ export default function GetInTouchSection() {
             fd.append("city", form.city);
             fd.append("message", form.message);
 
-            const res = await fetch("/api/apply/", {
+            const res = await fetch(`${API_BASE}/api/apply/`, {
                 method: "POST",
                 body: fd,
             });
-
 
             if (!res.ok) {
                 const text = await res.text();

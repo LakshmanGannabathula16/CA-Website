@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-
-const API_URL =
-    "https://ca-website-qj5u.onrender.com/api/live-news/";
+import { API_BASE } from "../api";
+const API_URL = `${API_BASE}/api/live-news/`;
 
 const PAGE_SIZE = 10;
 

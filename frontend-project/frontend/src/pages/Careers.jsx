@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { API_BASE } from "../api";
 import Select from "react-select";
 import DatePicker from "react-date-picker";
 
@@ -151,7 +152,7 @@ export default function Careers() {
             fd.append("dob", formData.dob ? formatDateDDMMYYYY(formData.dob) : "");
             if (formData.resume) fd.append("resume", formData.resume);
 
-            const res = await fetch("/api/apply/", {
+            const res = await fetch(`${API_BASE}/api/apply/`, {
                 method: "POST",
                 body: fd,
             });
