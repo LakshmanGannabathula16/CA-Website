@@ -196,14 +196,10 @@ def live_news(request):
         "due_dates": due_dates[:12],
     }
 
-    _LIVE_NEWS_CACHE["ts"] = now_ts"
+    _LIVE_NEWS_CACHE["ts"] = now_ts
     _LIVE_NEWS_CACHE["data"] = final
 
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
-import base64, requests, os
 
 
 @csrf_exempt
