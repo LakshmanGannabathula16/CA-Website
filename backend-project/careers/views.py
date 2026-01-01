@@ -199,8 +199,7 @@ def live_news(request):
     _LIVE_NEWS_CACHE["ts"] = now_ts
     _LIVE_NEWS_CACHE["data"] = final
     return JsonResponse(final, safe=False)
-    
-from django.http import JsonResponse
+    from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import base64, os, requests
@@ -232,45 +231,33 @@ def apply_form(request):
             html_body = f"""
 <!DOCTYPE html>
 <html>
-<body style="margin:0;background:#f3f5fb;padding:0;">
+<body style="margin:0;padding:0;background:#f3f5fb;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f5fb;">
     <tr>
-      <td align="center" style="padding:16px 10px;">
+      <td align="center" style="padding:14px 8px;">
 
-        <table cellpadding="0" cellspacing="0" width="100%" style="max-width:760px;background:#ffffff;border-radius:14px;border:1px solid #e1e6f0;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
+        <table cellpadding="0" cellspacing="0" width="100%" style="max-width:760px;width:100%;background:#ffffff;border-radius:14px;border:1px solid #e1e6f0;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
 
           <!-- HEADER -->
           <tr>
-            <td style="background:#091a44;padding:18px 20px;">
-              <table width="100%" cellpadding="0" cellspacing="0">
+            <td style="background:#091a44;padding:14px 12px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="width:100%;">
                 <tr>
 
-                  <!-- LOGO -->
-                  <td width="70" valign="middle" style="text-align:left;">
-                    <img src="https://ca-website-qj5u.onrender.com/static/ca-logo.png"
-                         style="width:54px;border-radius:12px;display:block;">
+                  <td width="64" valign="middle" style="text-align:left;">
+                    <img src="cid:logo123" width="52" style="display:block;border-radius:10px;">
                   </td>
 
-                  <!-- CENTER HEADING -->
                   <td valign="middle" style="text-align:center;">
-
-                    <div style="color:#ffffff;
-                                font-size:20px;
-                                font-weight:900;
-                                line-height:1.2;">
+                    <div style="color:#ffffff;font-size:18px;font-weight:900;line-height:1.2;">
                       Pavan Kalyan & Associates
                     </div>
-
-                    <div style="color:#dfe5ff;
-                                font-size:13px;
-                                margin-top:4px;">
+                    <div style="color:#dfe5ff;font-size:12px;margin-top:3px;">
                       Chartered Accountants
                     </div>
-
                   </td>
 
-                  <!-- RIGHT BALANCER -->
-                  <td width="70">&nbsp;</td>
+                  <td width="64">&nbsp;</td>
 
                 </tr>
               </table>
@@ -279,12 +266,11 @@ def apply_form(request):
 
           <!-- BODY -->
           <tr>
-            <td style="padding:18px 16px;font-size:14px;color:#1c1c1c;">
-
-              <h3 style="margin:0 0 12px;font-size:17px;">Contact Enquiry</h3>
+            <td style="padding:14px 12px;font-size:14px;color:#1c1c1c;">
+              <h3 style="margin:0 0 10px;font-size:16px;">Contact Enquiry</h3>
 
               <table width="100%" style="line-height:1.9;">
-                <tr><td width="180"><b>Name:</b></td><td>{name}</td></tr>
+                <tr><td width="160"><b>Name:</b></td><td>{name}</td></tr>
                 <tr><td><b>Email:</b></td><td>{email}</td></tr>
                 <tr><td><b>Mobile:</b></td><td>{number}</td></tr>
                 <tr><td><b>City:</b></td><td>{city}</td></tr>
@@ -322,7 +308,24 @@ def apply_form(request):
                     {"type": "text/plain", "value": "Contact enquiry"},
                     {"type": "text/html", "value": html_body},
                 ],
+                "attachments": []
             }
+
+            # INLINE LOGO
+            try:
+                logo_path = os.path.join(settings.BASE_DIR, "static", "ca-logo.png")
+                with open(logo_path, "rb") as f:
+                    logo_encoded = base64.b64encode(f.read()).decode()
+
+                payload["attachments"].append({
+                    "content": logo_encoded,
+                    "type": "image/png",
+                    "filename": "logo.png",
+                    "disposition": "inline",
+                    "content_id": "logo123"
+                })
+            except Exception as e:
+                print("Logo attach error:", e)
 
             requests.post(
                 "https://api.sendgrid.com/v3/mail/send",
@@ -358,45 +361,33 @@ def apply_form(request):
         html_body = f"""
 <!DOCTYPE html>
 <html>
-<body style="margin:0;background:#f3f5fb;padding:0;">
+<body style="margin:0;padding:0;background:#f3f5fb;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f5fb;">
     <tr>
-      <td align="center" style="padding:16px 10px;">
+      <td align="center" style="padding:14px 8px;">
 
-        <table cellpadding="0" cellspacing="0" width="100%" style="max-width:760px;background:#ffffff;border-radius:14px;border:1px solid #e1e6f0;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
+        <table cellpadding="0" cellspacing="0" width="100%" style="max-width:760px;width:100%;background:#ffffff;border-radius:14px;border:1px solid #e1e6f0;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
 
           <!-- HEADER -->
           <tr>
-            <td style="background:#091a44;padding:18px 20px;">
+            <td style="background:#091a44;padding:14px 12px;">
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
 
-                  <!-- LOGO -->
-                  <td width="70" valign="middle" style="text-align:left;">
-                    <img src="https://ca-website-qj5u.onrender.com/static/ca-logo.png"
-                         style="width:54px;border-radius:12px;display:block;">
+                  <td width="64" valign="middle" style="text-align:left;">
+                    <img src="cid:logo123" width="52" style="display:block;border-radius:10px;">
                   </td>
 
-                  <!-- CENTER HEADING -->
                   <td valign="middle" style="text-align:center;">
-
-                    <div style="color:#ffffff;
-                                font-size:20px;
-                                font-weight:900;
-                                line-height:1.2;">
+                    <div style="color:#ffffff;font-size:18px;font-weight:900;line-height:1.2;">
                       Pavan Kalyan & Associates
                     </div>
-
-                    <div style="color:#dfe5ff;
-                                font-size:13px;
-                                margin-top:4px;">
+                    <div style="color:#dfe5ff;font-size:12px;margin-top:3px;">
                       Chartered Accountants
                     </div>
-
                   </td>
 
-                  <!-- RIGHT BALANCER -->
-                  <td width="70">&nbsp;</td>
+                  <td width="64">&nbsp;</td>
 
                 </tr>
               </table>
@@ -405,38 +396,38 @@ def apply_form(request):
 
           <!-- BODY -->
           <tr>
-            <td style="padding:18px 16px;font-size:14px;color:#1c1c1c;">
+            <td style="padding:14px 12px;font-size:14px;color:#1c1c1c;">
 
-              <h3 style="margin:0 0 12px;font-size:17px;">Job Application</h3>
+              <h3 style="margin:0 0 10px;font-size:16px;">Job Application</h3>
 
-              <h4 style="margin:8px 0;">Personal Details</h4>
+              <h4 style="margin:6px 0;">Personal Details</h4>
               <table width="100%" style="line-height:1.9;">
-                <tr><td width="190"><b>Name:</b></td><td>{first} {last}</td></tr>
+                <tr><td width="180"><b>Name:</b></td><td>{first} {last}</td></tr>
                 <tr><td><b>Email:</b></td><td>{email}</td></tr>
                 <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
                 <tr><td><b>Gender:</b></td><td>{gender or "—"}</td></tr>
                 <tr><td><b>Date of Birth:</b></td><td>{dob or "—"}</td></tr>
               </table>
 
-              <hr style="border:none;border-top:1px solid #e6e9f3;margin:12px 0;">
+              <hr style="border:none;border-top:1px solid #e6e9f3;margin:10px 0;">
 
-              <h4 style="margin:8px 0;">Professional Details</h4>
+              <h4 style="margin:6px 0;">Professional Details</h4>
               <table width="100%" style="line-height:1.9;">
-                <tr><td width="190"><b>Position:</b></td><td>{position}</td></tr>
+                <tr><td width="180"><b>Position:</b></td><td>{position}</td></tr>
                 <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
                 <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
                 <tr><td><b>Experience:</b></td><td>{experienceYear or "0"} Years {experienceMonth or "0"} Months</td></tr>
               </table>
 
-              <hr style="border:none;border-top:1px solid #e6e9f3;margin:12px 0;">
+              <hr style="border:none;border-top:1px solid #e6e9f3;margin:10px 0;">
 
-              <h4 style="margin:8px 0;">Additional Information</h4>
-              <table width="100%" style="line-height:1.9%;">
-                <tr><td width="190"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
+              <h4 style="margin:6px 0;">Additional Information</h4>
+              <table width="100%" style="line-height:1.9;">
+                <tr><td width="180"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
                 <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
               </table>
 
-              <div style="margin-top:14px;background:#091a44;color:#ffffff;padding:10px;border-radius:8px;text-align:center;font-size:13px;">
+              <div style="margin-top:12px;background:#091a44;color:#ffffff;padding:10px;border-radius:8px;text-align:center;font-size:12px;">
                 The applicant’s resume is attached with this email.
               </div>
 
@@ -484,8 +475,24 @@ def apply_form(request):
                 {"type": "text/plain", "value": "Job application"},
                 {"type": "text/html", "value": html_body},
             ],
-            "attachments": attachments or None,
+            "attachments": attachments
         }
+
+        # INLINE LOGO
+        try:
+            logo_path = os.path.join(settings.BASE_DIR, "static", "ca-logo.png")
+            with open(logo_path, "rb") as f:
+                logo_encoded = base64.b64encode(f.read()).decode()
+
+            payload["attachments"].append({
+                "content": logo_encoded,
+                "type": "image/png",
+                "filename": "logo.png",
+                "disposition": "inline",
+                "content_id": "logo123"
+            })
+        except Exception as e:
+            print("Logo attach error:", e)
 
         requests.post(
             "https://api.sendgrid.com/v3/mail/send",
@@ -502,3 +509,4 @@ def apply_form(request):
     except Exception as e:
         print("APPLY_FORM ERROR:", e)
         return JsonResponse({"ok": False, "message": "Server error"}, status=500)
+
