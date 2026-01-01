@@ -4,7 +4,7 @@ import backgroundImage from "../assets/charted.jpeg";
 export default function Hero() {
 
     const fullName = "Pavan Kalyan & Associates";
-    const fullTitle = "Chartered Accountant";
+    const fullTitle = "Chartered Accountants";
 
     const [nameText, setNameText] = useState("");
     const [titleText, setTitleText] = useState("");
