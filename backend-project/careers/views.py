@@ -196,8 +196,14 @@ def live_news(request):
         "due_dates": due_dates[:12],
     }
 
-    _LIVE_NEWS_CACHE["ts"] = now_ts
+    _LIVE_NEWS_CACHE["ts"] = now_ts"
     _LIVE_NEWS_CACHE["data"] = final
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import base64, requests, os
 
 
 @csrf_exempt
@@ -210,11 +216,19 @@ def apply_form(request):
         data = request.POST
         files = request.FILES
 
+        # ---------------- INLINE LOGO ----------------
+        logo_path = os.path.join(settings.BASE_DIR, "static", "ca-logo.png")
+        logo_content = None
+
+        if os.path.exists(logo_path):
+            with open(logo_path, "rb") as f:
+                logo_content = base64.b64encode(f.read()).decode()
+
         form_type = data.get("formType", "application")
 
-        # =========================================================
+        # =================================================
         # CONTACT FORM
-        # =========================================================
+        # =================================================
         if form_type == "contact":
             name = data.get("name", "")
             number = data.get("number", "")
@@ -237,21 +251,20 @@ def apply_form(request):
               <td style="background:#0A1A44;padding:16px 20px;">
                 <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td align="center">
-                      <table cellpadding="0" cellspacing="0">
-                        <tr>
-                          <td valign="middle">
-                            <img src="https://ca-website-qj5u.onrender.com/static/ca-logo.png"
-                                 style="display:block;width:52px;height:auto;border-radius:10px;margin-right:10px;">
-                          </td>
-                          <td valign="middle">
-                            <div style="color:#ffffff;font-size:18px;font-weight:800;white-space:nowrap;">
-                              Pavan Kalyan & Associates — <span style="font-weight:500;">Chartered Accountants</span>
-                            </div>
-                          </td>
-                        </tr>
-                      </table>
+
+                    <td valign="middle" style="width:60px;">
+                      <img src="cid:logo123" style="display:block;width:50px;height:auto;border-radius:10px;">
                     </td>
+
+                    <td valign="middle" style="padding-left:0;">
+                      <div style="color:#ffffff;font-size:18px;font-weight:800;line-height:1.2;">
+                        Pavan Kalyan & Associates
+                      </div>
+                      <div style="color:#dfe4ff;font-size:12px;line-height:1.2;">
+                        Chartered Accountants
+                      </div>
+                    </td>
+
                   </tr>
                 </table>
               </td>
@@ -301,7 +314,17 @@ def apply_form(request):
                     {"type": "text/plain", "value": "Contact enquiry"},
                     {"type": "text/html", "value": html_body},
                 ],
+                "attachments": []
             }
+
+            if logo_content:
+                payload["attachments"].append({
+                    "content": logo_content,
+                    "type": "image/png",
+                    "filename": "logo.png",
+                    "disposition": "inline",
+                    "content_id": "logo123"
+                })
 
             requests.post(
                 "https://api.sendgrid.com/v3/mail/send",
@@ -310,14 +333,14 @@ def apply_form(request):
                     "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
                     "Content-Type": "application/json",
                 },
-                timeout=15,
+                timeout=20,
             )
 
             return JsonResponse({"ok": True, "message": "Message sent"})
 
-        # =========================================================
+        # =================================================
         # JOB APPLICATION
-        # =========================================================
+        # =================================================
         first = data.get("firstName", "")
         last = data.get("lastName", "")
         email = data.get("email", "")
@@ -341,28 +364,27 @@ def apply_form(request):
       <tr>
         <td align="center" style="padding:12px 8px;">
 
-          <table width="100%" cellspacing="0" cellpadding="0" style="max-width:900px;background:#ffffff;border:1px solid #d9dde5;border-radius:14px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
+          <table width="100%" cellspacing="0" cellpadding="0" style="max-width:900px;background:#ffffff;border:1.0px solid #d9dde5;border-radius:14px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
 
             <!-- HEADER -->
             <tr>
               <td style="background:#0A1A44;padding:16px 20px;">
                 <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td align="center">
-                      <table cellpadding="0" cellspacing="0">
-                        <tr>
-                          <td valign="middle">
-                            <img src="https://ca-website-qj5u.onrender.com/static/ca-logo.png"
-                                 style="display:block;width:52px;height:auto;border-radius:10px;margin-right:10px;">
-                          </td>
-                          <td valign="middle">
-                            <div style="color:#ffffff;font-size:18px;font-weight:800;white-space:nowrap;">
-                              Pavan Kalyan & Associates — <span style="font-weight:500;">Chartered Accountants</span>
-                            </div>
-                          </td>
-                        </tr>
-                      </table>
+
+                    <td valign="middle" style="width:60px;">
+                      <img src="cid:logo123" style="display:block;width:50px;height:auto;border-radius:10px;">
                     </td>
+
+                    <td valign="middle" style="padding-left:0;">
+                      <div style="color:#ffffff;font-size:18px;font-weight:800;line-height:1.2;">
+                        Pavan Kalyan & Associates
+                      </div>
+                      <div style="color:#dfe4ff;font-size:12px;line-height:1.2;">
+                        Chartered Accountants
+                      </div>
+                    </td>
+
                   </tr>
                 </table>
               </td>
@@ -439,8 +461,17 @@ def apply_form(request):
                 {"type": "text/plain", "value": "Job application"},
                 {"type": "text/html", "value": html_body},
             ],
-            "attachments": attachments or None,
+            "attachments": attachments,
         }
+
+        if logo_content:
+            payload["attachments"].append({
+                "content": logo_content,
+                "type": "image/png",
+                "filename": "logo.png",
+                "disposition": "inline",
+                "content_id": "logo123"
+            })
 
         requests.post(
             "https://api.sendgrid.com/v3/mail/send",
@@ -449,7 +480,7 @@ def apply_form(request):
                 "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
                 "Content-Type": "application/json",
             },
-            timeout=15,
+            timeout=20,
         )
 
         return JsonResponse({"ok": True, "message": "Application sent"})
