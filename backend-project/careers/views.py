@@ -10,6 +10,14 @@ import base64
 from pathlib import Path
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import base64, requests
+
+
+LOGO_URL = "https://ca-website-gilt-one.vercel.app/ca-logo.png"
+
 
 
 # =========================================================
@@ -200,16 +208,6 @@ def live_news(request):
     _LIVE_NEWS_CACHE["data"] = final
     return JsonResponse(final, safe=False)
 
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
-import base64, requests
-
-
-LOGO_URL = "https://ca-website-gilt-one.vercel.app/ca-logo.png"
-
-
 @csrf_exempt
 def apply_form(request):
 
@@ -236,42 +234,50 @@ def apply_form(request):
             html_body = f"""
 <!DOCTYPE html>
 <html>
-<body style="margin:0;padding:0;background:#f3f5fb;">
-<table width="100%" cellpadding="0" cellspacing="0">
+<body style="margin:0;padding:0;background:#e9ecf4;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:14px 0;">
+<tr>
+<td align="center">
+
+<!-- FIXED WIDTH CARD -->
+<table width="760" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;">
 
 <tr>
-<td align="center" style="padding:14px 8px;">
+<td style="background:#091a44;padding:18px 10px;">
 
-<table cellpadding="0" cellspacing="0" width="100%" style="max-width:760px;background:#fff;border-radius:14px;border:1px solid #e1e6f0;font-family:Arial,Helvetica,sans-serif;">
-
-<tr>
-<td style="background:#091a44;padding:14px 12px;">
 <table width="100%">
 <tr>
 
-<td width="64" valign="middle" style="text-align:left;">
-<img src="{LOGO_URL}" width="52" style="display:block;border-radius:10px;">
+<td align="center">
+<img src="{LOGO_URL}" width="56" style="display:block;border-radius:10px;">
 </td>
-
-<td valign="middle" style="text-align:center;">
-<div style="color:#fff;font-size:18px;font-weight:900;">Pavan Kalyan & Associates</div>
-<div style="color:#dfe5ff;font-size:12px;">Chartered Accountants</div>
-</td>
-
-<td width="64">&nbsp;</td>
 
 </tr>
-</table>
+<tr>
+<td align="center" style="color:#ffffff;font-size:20px;font-weight:900;">
+Pavan Kalyan & Associates
 </td>
 </tr>
 
 <tr>
-<td style="padding:14px 12px;font-size:14px;color:#1c1c1c;">
+<td align="center" style="color:#dfe5ff;font-size:13px;">
+Chartered Accountants
+</td>
+</tr>
 
-<h3 style="margin:0 0 10px;">Contact Enquiry</h3>
+</table>
 
-<table width="100%" style="line-height:1.9;">
-<tr><td width="150"><b>Name:</b></td><td>{name}</td></tr>
+</td>
+</tr>
+
+<tr>
+<td style="padding:16px;font-size:14px;color:#1c1c1c;">
+
+<h3 style="margin:4px 0 12px;">Contact Enquiry</h3>
+
+<table width="100%" style="line-height:2;">
+<tr><td width="180"><b>Name:</b></td><td>{name}</td></tr>
 <tr><td><b>Email:</b></td><td>{email}</td></tr>
 <tr><td><b>Mobile:</b></td><td>{number}</td></tr>
 <tr><td><b>City:</b></td><td>{city}</td></tr>
@@ -282,7 +288,7 @@ def apply_form(request):
 </tr>
 
 <tr>
-<td style="background:#f7f9ff;padding:10px;text-align:center;font-size:11px;color:#666;">
+<td style="background:#f6f8ff;padding:10px;text-align:center;font-size:11px;color:#666;">
 Sent to HR Email: {settings.HR_EMAIL}<br>
 © Pavan Kalyan & Associates — Chartered Accountants
 </td>
@@ -292,11 +298,12 @@ Sent to HR Email: {settings.HR_EMAIL}<br>
 
 </td>
 </tr>
-
 </table>
+
 </body>
 </html>
 """
+
 
             payload = {
                 "personalizations": [{
@@ -345,71 +352,77 @@ Sent to HR Email: {settings.HR_EMAIL}<br>
         html_body = f"""
 <!DOCTYPE html>
 <html>
-<body style="margin:0;padding:0;background:#f3f5fb;">
-<table width="100%" cellpadding="0" cellspacing="0">
+<body style="margin:0;padding:0;background:#e9ecf4;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:14px 0;">
+<tr>
+<td align="center">
+
+<table width="760" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;">
 
 <tr>
-<td align="center" style="padding:14px 8px;">
+<td style="background:#091a44;padding:18px 10px;">
 
-<table cellpadding="0" cellspacing="0" width="100%" style="max-width:760px;background:#fff;border-radius:14px;border:1px solid #e1e6f0;font-family:Arial,Helvetica,sans-serif;">
-
-<tr>
-<td style="background:#091a44;padding:14px 12px;">
 <table width="100%">
 <tr>
-
-<td width="64" valign="middle" style="text-align:left;">
-<img src="{LOGO_URL}" width="52" style="display:block;border-radius:10px;">
-</td>
-
-<td valign="middle" style="text-align:center;">
-<div style="color:#fff;font-size:18px;font-weight:900;">Pavan Kalyan & Associates</div>
-<div style="color:#dfe5ff;font-size:12px;">Chartered Accountants</div>
-</td>
-
-<td width="64">&nbsp;</td>
-
-</tr>
-</table>
+<td align="center">
+<img src="{LOGO_URL}" width="56" style="display:block;border-radius:10px;">
 </td>
 </tr>
 
 <tr>
-<td style="padding:14px 12px;font-size:14px;color:#1c1c1c;">
+<td align="center" style="color:#ffffff;font-size:20px;font-weight:900;">
+Pavan Kalyan & Associates
+</td>
+</tr>
 
-<h3 style="margin:0 0 10px;">Job Application</h3>
+<tr>
+<td align="center" style="color:#dfe5ff;font-size:13px;">
+Chartered Accountants
+</td>
+</tr>
 
-<h4 style="margin:6px 0;">Personal Details</h4>
+</table>
 
-<table width="100%" style="line-height:1.9;">
-<tr><td width="180"><b>Name:</b></td><td>{first} {last}</td></tr>
+</td>
+</tr>
+
+<tr>
+<td style="padding:16px;font-size:14px;color:#1c1c1c;">
+
+<h3 style="margin:0 0 12px;">Job Application</h3>
+
+<h4>Personal Details</h4>
+
+<table width="100%" style="line-height:2;">
+<tr><td width="200"><b>Name:</b></td><td>{first} {last}</td></tr>
 <tr><td><b>Email:</b></td><td>{email}</td></tr>
 <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
 <tr><td><b>Gender:</b></td><td>{gender or "—"}</td></tr>
 <tr><td><b>Date of Birth:</b></td><td>{dob or "—"}</td></tr>
 </table>
 
-<hr style="border:none;border-top:1px solid #e6e9f3;margin:10px 0;">
+<hr>
 
-<h4 style="margin:6px 0;">Professional Details</h4>
+<h4>Professional Details</h4>
 
-<table width="100%" style="line-height:1.9;">
-<tr><td width="180"><b>Position:</b></td><td>{position}</td></tr>
+<table width="100%" style="line-height:2;">
+<tr><td width="200"><b>Position:</b></td><td>{position}</td></tr>
 <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
 <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
 <tr><td><b>Experience:</b></td><td>{experienceYear or "0"} Years {experienceMonth or "0"} Months</td></tr>
 </table>
 
-<hr style="border:none;border-top:1px solid #e6e9f3;margin:10px 0;">
+<hr>
 
-<h4 style="margin:6px 0;">Additional Information</h4>
+<h4>Additional Information</h4>
 
-<table width="100%" style="line-height:1.9;">
-<tr><td width="180"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
+<table width="100%" style="line-height:2;">
+<tr><td width="200"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
 <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
 </table>
 
-<div style="margin-top:12px;background:#091a44;color:#fff;padding:10px;border-radius:8px;text-align:center;font-size:12px;">
+<div style="margin-top:14px;background:#091a44;color:#ffffff;padding:10px;border-radius:8px;text-align:center;">
 The applicant’s resume is attached with this email.
 </div>
 
@@ -417,7 +430,7 @@ The applicant’s resume is attached with this email.
 </tr>
 
 <tr>
-<td style="background:#f7f9ff;padding:10px;text-align:center;font-size:11px;color:#666;">
+<td style="background:#f6f8ff;padding:10px;text-align:center;font-size:11px;color:#666;">
 Sent to HR Email: {settings.HR_EMAIL}<br>
 © Pavan Kalyan & Associates — Chartered Accountants
 </td>
@@ -427,8 +440,8 @@ Sent to HR Email: {settings.HR_EMAIL}<br>
 
 </td>
 </tr>
-
 </table>
+
 </body>
 </html>
 """
