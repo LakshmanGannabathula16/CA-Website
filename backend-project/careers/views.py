@@ -199,7 +199,6 @@ def live_news(request):
     _LIVE_NEWS_CACHE["ts"] = now_ts
     _LIVE_NEWS_CACHE["data"] = final
 
-    return JsonResponse(final)
 @csrf_exempt
 def apply_form(request):
 
