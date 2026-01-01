@@ -201,12 +201,6 @@ def live_news(request):
 
     return JsonResponse(final)
 
-import base64
-import requests
-from django.conf import settings
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-
 
 @csrf_exempt
 def apply_form(request):
@@ -242,31 +236,41 @@ def apply_form(request):
 <div style="margin:0;padding:0;background:#e9eef5;font-family:Arial,Helvetica,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 auto;">
     <tr>
-      <td align="center" style="padding:26px 10px;">
+      <td align="center" style="padding:30px 12px;">
 
-        <table cellpadding="0" cellspacing="0" width="100%" style="max-width:960px;background:#ffffff;border-radius:16px;border:1px solid #d7dce2;">
+        <table cellpadding="0" cellspacing="0" width="100%" 
+          style="
+            max-width:1080px;
+            background:#ffffff;
+            border-radius:18px;
+            border:1px solid #d4d9e2;
+            box-shadow:0 14px 32px rgba(0,0,0,.08);
+          ">
 
           <tr>
-            <td style="background:#0A1A44;padding:26px 22px;border-radius:16px 16px 0 0;color:#fff;">
+            <td style="
+              background:#0A1A44;
+              padding:34px 30px;
+              border-radius:18px 18px 0 0;
+              color:#fff;
+            ">
               <table width="100%">
                 <tr>
 
-                  <td width="70" align="left">
-                    <img src="{LOGO_URL}" style="width:64px;display:block" alt="Logo">
+                  <td width="80" align="left">
+                    <img src="{LOGO_URL}" style="width:78px;display:block" alt="Logo">
                   </td>
-                        <td align="center" style="text-align:center; white-space:nowrap;">
 
-                        <div style="font-size:22px;font-weight:900; letter-spacing:.3px;">
-                            Pavan Kalyan & Associates
-                        </div>
+                  <td align="center" style="text-align:center;">
+                    <div style="font-size:26px;font-weight:900;letter-spacing:.4px;">
+                      Pavan Kalyan & Associates
+                    </div>
+                    <div style="font-size:14px;opacity:.9;margin-top:4px;">
+                      Contact Enquiry
+                    </div>
+                  </td>
 
-                        <div style="font-size:13px;opacity:.9; margin-top:2px;">
-                            Contact Enquiry
-                        </div>
-
-                        </td>
-
-                  <td width="70">&nbsp;</td>
+                  <td width="80">&nbsp;</td>
 
                 </tr>
               </table>
@@ -274,25 +278,37 @@ def apply_form(request):
           </tr>
 
           <tr>
-            <td style="padding:22px 26px;font-size:14px;color:#222;">
+            <td style="
+              padding:32px 36px;
+              font-size:15px;
+              color:#1d1d1d;
+              line-height:1.9;
+            ">
 
-              <h3 style="margin:0 0 16px;text-align:center;color:#0A1A44;">
+              <h3 style="margin:0 0 18px;text-align:center;color:#0A1A44;">
                 Contact Details
               </h3>
 
-              <table width="100%" style="line-height:1.8;">
-                <tr><td width="180"><b>Name:</b></td><td>{name}</td></tr>
-                <tr><td><b>Email:</b></td><td>{email}</td></tr>
-                <tr><td><b>Mobile:</b></td><td>{number}</td></tr>
-                <tr><td><b>City:</b></td><td>{city}</td></tr>
-                <tr><td><b>Message:</b></td><td>{message}</td></tr>
+              <table width="100%" style="line-height:2;">
+                <tr><td width="210" style="font-weight:600;">Name:</td><td>{name}</td></tr>
+                <tr><td style="font-weight:600;">Email:</td><td>{email}</td></tr>
+                <tr><td style="font-weight:600;">Mobile:</td><td>{number}</td></tr>
+                <tr><td style="font-weight:600;">City:</td><td>{city}</td></tr>
+                <tr><td style="font-weight:600;">Message:</td><td>{message}</td></tr>
               </table>
 
             </td>
           </tr>
 
           <tr>
-            <td style="background:#f5f7fb;padding:14px;text-align:center;font-size:11px;color:#666;border-radius:0 0 16px 16px;">
+            <td style="
+              background:#f5f7fb;
+              padding:18px;
+              text-align:center;
+              font-size:12px;
+              color:#666;
+              border-radius:0 0 18px 18px;
+            ">
               Sent to HR: {settings.HR_EMAIL}<br>
               © Pavan Kalyan & Associates — Chartered Accountants
             </td>
@@ -359,29 +375,41 @@ def apply_form(request):
 <div style="margin:0;padding:0;background:#e9eef5;font-family:Arial,Helvetica,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0">
     <tr>
-      <td align="center" style="padding:26px 10px;">
+      <td align="center" style="padding:30px 12px;">
 
-        <table cellpadding="0" cellspacing="0" width="100%" style="max-width:960px;background:#ffffff;border-radius:16px;border:1px solid #d7dce2;">
+        <table cellpadding="0" cellspacing="0" width="100%" 
+          style="
+            max-width:1080px;
+            background:#ffffff;
+            border-radius:18px;
+            border:1px solid #d4d9e2;
+            box-shadow:0 14px 32px rgba(0,0,0,.08);
+          ">
 
           <tr>
-            <td style="background:#0A1A44;padding:26px 22px;border-radius:16px 16px 0 0;color:#fff;">
+            <td style="
+              background:#0A1A44;
+              padding:34px 30px;
+              border-radius:18px 18px 0 0;
+              color:#fff;
+            ">
               <table width="100%">
                 <tr>
 
-                  <td width="70">
-                    <img src="{LOGO_URL}" style="width:64px;display:block" alt="Logo">
+                  <td width="80">
+                    <img src="{LOGO_URL}" style="width:78px;display:block" alt="Logo">
                   </td>
 
                   <td align="center">
-                    <div style="font-size:22px;font-weight:900;">
+                    <div style="font-size:26px;font-weight:900;">
                       Pavan Kalyan & Associates
                     </div>
-                    <div style="font-size:13px;opacity:.9;">
+                    <div style="font-size:14px;opacity:.9;margin-top:4px;">
                       Job Application
                     </div>
                   </td>
 
-                  <td width="70">&nbsp;</td>
+                  <td width="80">&nbsp;</td>
 
                 </tr>
               </table>
@@ -389,31 +417,36 @@ def apply_form(request):
           </tr>
 
           <tr>
-            <td style="padding:22px 26px;font-size:14px;color:#222;">
+            <td style="
+              padding:32px 36px;
+              font-size:15px;
+              color:#1d1d1d;
+              line-height:1.9;
+            ">
 
-              <h3 style="text-align:center;margin:0 0 14px;color:#0A1A44;">
+              <h3 style="text-align:center;margin:0 0 16px;color:#0A1A44;">
                 Personal Details
               </h3>
 
-              <table width="100%" style="line-height:1.8;">
-                <tr><td width="180"><b>Name:</b></td><td>{first} {last}</td></tr>
-                <tr><td><b>Email:</b></td><td>{email}</td></tr>
-                <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
-                <tr><td><b>Gender:</b></td><td>{gender or "—"}</td></tr>
-                <tr><td><b>Date of Birth:</b></td><td>{dob or "—"}</td></tr>
+              <table width="100%" style="line-height:2;">
+                <tr><td width="210" style="font-weight:600;">Name:</td><td>{first} {last}</td></tr>
+                <tr><td style="font-weight:600;">Email:</td><td>{email}</td></tr>
+                <tr><td style="font-weight:600;">Mobile:</td><td>{mobile}</td></tr>
+                <tr><td style="font-weight:600;">Gender:</td><td>{gender or "—"}</td></tr>
+                <tr><td style="font-weight:600;">Date of Birth:</td><td>{dob or "—"}</td></tr>
               </table>
 
               <br>
 
-              <h3 style="text-align:center;margin:0 0 14px;color:#0A1A44;">
+              <h3 style="text-align:center;margin:0 0 16px;color:#0A1A44;">
                 Professional Details
               </h3>
 
-              <table width="100%" style="line-height:1.8;">
-                <tr><td width="180"><b>Position:</b></td><td>{position}</td></tr>
-                <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
-                <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
-                <tr><td><b>Experience:</b></td><td>{experienceYear or "0"} yrs {experienceMonth or "0"} months</td></tr>
+              <table width="100%" style="line-height:2;">
+                <tr><td width="210" style="font-weight:600;">Position:</td><td>{position}</td></tr>
+                <tr><td style="font-weight:600;">Qualification:</td><td>{qualification}</td></tr>
+                <tr><td style="font-weight:600;">Last Company:</td><td>{lastCompany or "—"}</td></tr>
+                <tr><td style="font-weight:600;">Experience:</td><td>{experienceYear or "0"} yrs {experienceMonth or "0"} months</td></tr>
               </table>
 
               <br>
@@ -422,9 +455,9 @@ def apply_form(request):
                 Additional Details
               </h3>
 
-              <table width="100%" style="line-height:1.8;">
-                <tr><td width="180"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
-                <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
+              <table width="100%" style="line-height:2;">
+                <tr><td width="210" style="font-weight:600;">Portfolio:</td><td>{portfolio or "—"}</td></tr>
+                <tr><td style="font-weight:600;">Comments:</td><td>{comments or "—"}</td></tr>
               </table>
 
               <br>
@@ -433,13 +466,20 @@ def apply_form(request):
                 📎 Attachments
               </h3>
 
-              <p>The applicant’s resume is attached with this email.</p>
+              <p style="margin:0;">The applicant’s resume is attached with this email.</p>
 
             </td>
           </tr>
 
           <tr>
-            <td style="background:#f5f7fb;padding:14px;text-align:center;font-size:11px;color:#666;border-radius:0 0 16px 16px;">
+            <td style="
+              background:#f5f7fb;
+              padding:18px;
+              text-align:center;
+              font-size:12px;
+              color:#666;
+              border-radius:0 0 18px 18px;
+            ">
               Sent to HR: {settings.HR_EMAIL}<br>
               © Pavan Kalyan & Associates — Chartered Accountants
             </td>
