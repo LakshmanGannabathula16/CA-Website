@@ -216,9 +216,9 @@ def apply_form(request):
 
         LOGO_URL = "https://ca-website-qj5u.onrender.com/static/ca-logo.png"
 
-        # ----------------------------------------------------------
-        # CONTACT FORM (MATCH EXACT DESIGN)
-        # ----------------------------------------------------------
+        # ------------------------------------------------------------------
+        # CONTACT FORM  (LOCKED DESKTOP STYLE)
+        # ------------------------------------------------------------------
         if form_type == "contact":
 
             name = data.get("name", "")
@@ -229,15 +229,24 @@ def apply_form(request):
 
             html_body = f"""
 <div style="font-family:Arial,Helvetica,sans-serif;background:#eef1f6;padding:22px;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:860px;margin:0 auto;background:#fff;border-radius:14px;border:1px solid #d9dde5;">
-    
+  <table cellpadding="0" cellspacing="0"
+    style="
+      width:860px;
+      min-width:860px;
+      max-width:860px;
+      margin:0 auto;
+      background:#ffffff;
+      border-radius:14px;
+      border:1px solid #d9dde5;
+    ">
+
     <tr>
-      <td style="background:#0A1A44;padding:26px 24px;border-radius:14px 14px 0 0;color:#fff;">
+      <td style="background:#0A1A44;padding:18px 16px;border-radius:14px 14px 0 0;color:#fff;">
         <table width="100%">
           <tr>
 
-            <td width="70" valign="middle">
-              <img src="{LOGO_URL}" style="width:64px;display:block">
+            <td width="70">
+              <img src="{LOGO_URL}" style="width:64px;display:block;">
             </td>
 
             <td align="center">
@@ -253,12 +262,12 @@ def apply_form(request):
     </tr>
 
     <tr>
-      <td style="padding:20px 24px;font-size:14px;color:#222;">
+      <td style="padding:16px 14px;font-size:14px;color:#222;">
 
         <h3 style="margin:0 0 10px;">Contact Details</h3>
 
-        <table width="100%" style="line-height:1.9;">
-          <tr><td width="180"><b>Name:</b></td><td>{name}</td></tr>
+        <table width="100%" style="line-height:1.9; table-layout:fixed;">
+          <tr><td width="190"><b>Name:</b></td><td>{name}</td></tr>
           <tr><td><b>Email:</b></td><td>{email}</td></tr>
           <tr><td><b>Mobile:</b></td><td>{number}</td></tr>
           <tr><td><b>City:</b></td><td>{city}</td></tr>
@@ -304,9 +313,10 @@ def apply_form(request):
 
             return JsonResponse({"ok": True, "message": "Message sent"})
 
-        # ----------------------------------------------------------
-        # JOB APPLICATION — EXACT SAME LOOK
-        # ----------------------------------------------------------
+        # ------------------------------------------------------------------
+        # JOB APPLICATION  (LOCKED DESKTOP STYLE)
+        # ------------------------------------------------------------------
+
         first = data.get("firstName", "")
         last = data.get("lastName", "")
         email = data.get("email", "")
@@ -324,16 +334,25 @@ def apply_form(request):
 
         html_body = f"""
 <div style="font-family:Arial,Helvetica,sans-serif;background:#eef1f6;padding:22px;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:860px;margin:0 auto;background:#fff;border-radius:14px;border:1px solid #d9dde5;">
-    
+  <table cellpadding="0" cellspacing="0"
+    style="
+      width:860px;
+      min-width:860px;
+      max-width:860px;
+      margin:0 auto;
+      background:#ffffff;
+      border-radius:14px;
+      border:1px solid #d9dde5;
+    ">
+
     <!-- HEADER -->
     <tr>
-      <td style="background:#0A1A44;padding:26px 24px;border-radius:14px 14px 0 0;color:#fff;">
+      <td style="background:#0A1A44;padding:18px 16px;border-radius:14px 14px 0 0;color:#fff;">
         <table width="100%">
           <tr>
 
             <td width="70">
-              <img src="{LOGO_URL}" style="width:64px;display:block">
+              <img src="{LOGO_URL}" style="width:64px;display:block;">
             </td>
 
             <td align="center">
@@ -350,11 +369,11 @@ def apply_form(request):
 
     <!-- BODY -->
     <tr>
-      <td style="padding:20px 24px;font-size:14px;color:#222;">
+      <td style="padding:16px 14px;font-size:14px;color:#222;">
 
         <h3 style="margin:0 0 10px;">Personal Details</h3>
 
-        <table width="100%" style="line-height:1.9;">
+        <table width="100%" style="line-height:1.9; table-layout:fixed;">
           <tr><td width="190"><b>Name:</b></td><td>{first} {last}</td></tr>
           <tr><td><b>Email:</b></td><td>{email}</td></tr>
           <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
@@ -362,27 +381,38 @@ def apply_form(request):
           <tr><td><b>Date of Birth:</b></td><td>{dob or "—"}</td></tr>
         </table>
 
-        <hr style="border:none;border-top:1px solid #e3e6ef;margin:14px 0;">
+        <hr style="border:none;border-top:1px solid #e3e6ef;margin:12px 0;">
 
         <h3 style="margin:0 0 10px;">Professional Details</h3>
 
-        <table width="100%" style="line-height:1.9;">
+        <table width="100%" style="line-height:1.9; table-layout:fixed;">
           <tr><td width="190"><b>Position:</b></td><td>{position}</td></tr>
           <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
           <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
           <tr><td><b>Experience:</b></td><td>{experienceYear or "0"} Years {experienceMonth or "0"} Months</td></tr>
         </table>
 
-        <hr style="border:none;border-top:1px solid #e3e6ef;margin:14px 0;">
+        <hr style="border:none;border-top:1px solid #e3e6ef;margin:12px 0;">
 
         <h3 style="margin:0 0 10px;">Additional Information</h3>
 
-        <table width="100%" style="line-height:1.9;">
+        <table width="100%" style="line-height:1.9; table-layout:fixed;">
           <tr><td width="190"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
           <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
         </table>
 
-        <div style="margin-top:16px;background:#0A1A44;color:#fff;padding:10px 14px;border-radius:8px;text-align:center;font-size:13px;">
+        <div style="
+          margin-top:14px;
+          background:#0A1A44;
+          color:#ffffff;
+          padding:10px;
+          border-radius:8px;
+          text-align:center;
+          font-size:13px;
+          width:860px;
+          min-width:860px;
+          max-width:860px;
+        ">
           The applicant’s resume is attached with this email.
         </div>
 
@@ -400,6 +430,7 @@ def apply_form(request):
 </div>
 """
 
+        # attachments
         attachments = []
         if "resume" in files:
             resume = files["resume"]
