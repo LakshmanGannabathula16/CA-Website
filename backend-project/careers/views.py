@@ -217,7 +217,7 @@ def apply_form(request):
         LOGO_URL = "https://ca-website-qj5u.onrender.com/static/ca-logo.png"
 
         # -------------------------------------------------------------
-        # CONTACT FORM  (NO OVERFLOW — MOBILE + DESKTOP CENTERED)
+        # CONTACT FORM (CENTERED — MOBILE SAFE)
         # -------------------------------------------------------------
         if form_type == "contact":
 
@@ -228,17 +228,19 @@ def apply_form(request):
             message = data.get("message", "")
 
             html_body = f"""
-<div style="font-family:Arial,Helvetica,sans-serif;background:#eef1f6;padding:14px;">
+<div style="font-family:Arial,Helvetica,sans-serif;background:#eef1f6;padding:6px 0;">
   <table cellpadding="0" cellspacing="0"
     style="
       width:100%;
       max-width:680px;
-      margin:0 auto;
+      margin-left:auto;
+      margin-right:auto;
       background:#ffffff;
       border-radius:14px;
       border:1px solid #d9dde5;
     ">
 
+    <!-- HEADER -->
     <tr>
       <td style="background:#0A1A44;padding:16px;border-radius:14px 14px 0 0;color:#fff;">
         <table width="100%">
@@ -260,8 +262,9 @@ def apply_form(request):
       </td>
     </tr>
 
+    <!-- BODY -->
     <tr>
-      <td style="padding:12px 14px;font-size:14px;color:#222;">
+      <td style="padding:10px 10px;font-size:14px;color:#222;">
 
         <h3 style="margin:0 0 10px;">Contact Details</h3>
 
@@ -276,6 +279,7 @@ def apply_form(request):
       </td>
     </tr>
 
+    <!-- FOOTER -->
     <tr>
       <td style="background:#f5f7fb;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
         Sent to HR Email: {settings.HR_EMAIL}<br>
@@ -313,7 +317,7 @@ def apply_form(request):
             return JsonResponse({"ok": True, "message": "Message sent"})
 
         # -------------------------------------------------------------
-        # JOB APPLICATION  (NO OVERFLOW — MOBILE + DESKTOP CENTERED)
+        # JOB APPLICATION  (CENTERED — MOBILE SAFE)
         # -------------------------------------------------------------
 
         first = data.get("firstName", "")
@@ -332,12 +336,13 @@ def apply_form(request):
         comments = data.get("comments", "")
 
         html_body = f"""
-<div style="font-family:Arial,Helvetica,sans-serif;background:#eef1f6;padding:14px;">
+<div style="font-family:Arial,Helvetica,sans-serif;background:#eef1f6;padding:6px 0;">
   <table cellpadding="0" cellspacing="0"
     style="
       width:100%;
       max-width:680px;
-      margin:0 auto;
+      margin-left:auto;
+      margin-right:auto;
       background:#ffffff;
       border-radius:14px;
       border:1px solid #d9dde5;
@@ -367,7 +372,7 @@ def apply_form(request):
 
     <!-- BODY -->
     <tr>
-      <td style="padding:12px 14px;font-size:14px;color:#222;">
+      <td style="padding:10px 10px;font-size:14px;color:#222;">
 
         <h3 style="margin:0 0 10px;">Personal Details</h3>
 
@@ -416,6 +421,7 @@ def apply_form(request):
       </td>
     </tr>
 
+    <!-- FOOTER -->
     <tr>
       <td style="background:#f5f7fb;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
         Sent to HR Email: {settings.HR_EMAIL}<br>
@@ -427,6 +433,7 @@ def apply_form(request):
 </div>
 """
 
+        # ATTACHMENTS
         attachments = []
         if "resume" in files:
             resume = files["resume"]
