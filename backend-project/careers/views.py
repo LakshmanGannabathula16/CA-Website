@@ -217,7 +217,7 @@ def apply_form(request):
         LOGO_URL = "https://ca-website-qj5u.onrender.com/static/ca-logo.png"
 
         # ------------------------------------------------------------------
-        # CONTACT FORM  (LOCKED DESKTOP STYLE)
+        # CONTACT FORM  (DESKTOP STYLE + MOBILE FIXED CENTER)
         # ------------------------------------------------------------------
         if form_type == "contact":
 
@@ -228,12 +228,12 @@ def apply_form(request):
             message = data.get("message", "")
 
             html_body = f"""
-<div style="font-family:Arial,Helvetica,sans-serif;background:#eef1f6;padding:22px;">
+<div style="font-family:Arial,Helvetica,sans-serif;background:#eef1f6;padding:18px;">
   <table cellpadding="0" cellspacing="0"
     style="
-      width:860px;
-      min-width:860px;
-      max-width:860px;
+      width:720px;
+      min-width:720px;
+      max-width:720px;
       margin:0 auto;
       background:#ffffff;
       border-radius:14px;
@@ -245,8 +245,8 @@ def apply_form(request):
         <table width="100%">
           <tr>
 
-            <td width="70">
-              <img src="{LOGO_URL}" style="width:64px;display:block;">
+            <td width="60">
+              <img src="{LOGO_URL}" style="width:56px;display:block;">
             </td>
 
             <td align="center">
@@ -254,7 +254,7 @@ def apply_form(request):
               <div style="font-size:12px;opacity:.9;">Chartered Accountants</div>
             </td>
 
-            <td width="70">&nbsp;</td>
+            <td width="60">&nbsp;</td>
 
           </tr>
         </table>
@@ -262,12 +262,12 @@ def apply_form(request):
     </tr>
 
     <tr>
-      <td style="padding:16px 14px;font-size:14px;color:#222;">
+      <td style="padding:14px 14px;font-size:14px;color:#222;">
 
         <h3 style="margin:0 0 10px;">Contact Details</h3>
 
         <table width="100%" style="line-height:1.9; table-layout:fixed;">
-          <tr><td width="190"><b>Name:</b></td><td>{name}</td></tr>
+          <tr><td width="180"><b>Name:</b></td><td>{name}</td></tr>
           <tr><td><b>Email:</b></td><td>{email}</td></tr>
           <tr><td><b>Mobile:</b></td><td>{number}</td></tr>
           <tr><td><b>City:</b></td><td>{city}</td></tr>
@@ -278,7 +278,7 @@ def apply_form(request):
     </tr>
 
     <tr>
-      <td style="background:#f5f7fb;padding:12px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
+      <td style="background:#f5f7fb;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
         Sent to HR Email: {settings.HR_EMAIL}<br>
         © Pavan Kalyan & Associates — Chartered Accountants
       </td>
@@ -314,7 +314,7 @@ def apply_form(request):
             return JsonResponse({"ok": True, "message": "Message sent"})
 
         # ------------------------------------------------------------------
-        # JOB APPLICATION  (LOCKED DESKTOP STYLE)
+        # JOB APPLICATION  (DESKTOP STYLE + MOBILE FIXED CENTER)
         # ------------------------------------------------------------------
 
         first = data.get("firstName", "")
@@ -333,12 +333,12 @@ def apply_form(request):
         comments = data.get("comments", "")
 
         html_body = f"""
-<div style="font-family:Arial,Helvetica,sans-serif;background:#eef1f6;padding:22px;">
+<div style="font-family:Arial,Helvetica,sans-serif;background:#eef1f6;padding:18px;">
   <table cellpadding="0" cellspacing="0"
     style="
-      width:860px;
-      min-width:860px;
-      max-width:860px;
+      width:720px;
+      min-width:720px;
+      max-width:720px;
       margin:0 auto;
       background:#ffffff;
       border-radius:14px;
@@ -351,8 +351,8 @@ def apply_form(request):
         <table width="100%">
           <tr>
 
-            <td width="70">
-              <img src="{LOGO_URL}" style="width:64px;display:block;">
+            <td width="60">
+              <img src="{LOGO_URL}" style="width:56px;display:block;">
             </td>
 
             <td align="center">
@@ -360,7 +360,7 @@ def apply_form(request):
               <div style="font-size:12px;opacity:.9;">Chartered Accountants</div>
             </td>
 
-            <td width="70">&nbsp;</td>
+            <td width="60">&nbsp;</td>
 
           </tr>
         </table>
@@ -369,49 +369,49 @@ def apply_form(request):
 
     <!-- BODY -->
     <tr>
-      <td style="padding:16px 14px;font-size:14px;color:#222;">
+      <td style="padding:14px 14px;font-size:14px;color:#222;">
 
         <h3 style="margin:0 0 10px;">Personal Details</h3>
 
         <table width="100%" style="line-height:1.9; table-layout:fixed;">
-          <tr><td width="190"><b>Name:</b></td><td>{first} {last}</td></tr>
+          <tr><td width="180"><b>Name:</b></td><td>{first} {last}</td></tr>
           <tr><td><b>Email:</b></td><td>{email}</td></tr>
           <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
           <tr><td><b>Gender:</b></td><td>{gender or "—"}</td></tr>
           <tr><td><b>Date of Birth:</b></td><td>{dob or "—"}</td></tr>
         </table>
 
-        <hr style="border:none;border-top:1px solid #e3e6ef;margin:12px 0;">
+        <hr style="border:none;border-top:1px solid #e3e6ef;margin:10px 0;">
 
         <h3 style="margin:0 0 10px;">Professional Details</h3>
 
         <table width="100%" style="line-height:1.9; table-layout:fixed;">
-          <tr><td width="190"><b>Position:</b></td><td>{position}</td></tr>
+          <tr><td width="180"><b>Position:</b></td><td>{position}</td></tr>
           <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
           <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
           <tr><td><b>Experience:</b></td><td>{experienceYear or "0"} Years {experienceMonth or "0"} Months</td></tr>
         </table>
 
-        <hr style="border:none;border-top:1px solid #e3e6ef;margin:12px 0;">
+        <hr style="border:none;border-top:1px solid #e3e6ef;margin:10px 0;">
 
         <h3 style="margin:0 0 10px;">Additional Information</h3>
 
         <table width="100%" style="line-height:1.9; table-layout:fixed;">
-          <tr><td width="190"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
+          <tr><td width="180"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
           <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
         </table>
 
         <div style="
-          margin-top:14px;
+          margin-top:12px;
           background:#0A1A44;
           color:#ffffff;
           padding:10px;
           border-radius:8px;
           text-align:center;
           font-size:13px;
-          width:860px;
-          min-width:860px;
-          max-width:860px;
+          width:720px;
+          min-width:720px;
+          max-width:720px;
         ">
           The applicant’s resume is attached with this email.
         </div>
@@ -420,7 +420,7 @@ def apply_form(request):
     </tr>
 
     <tr>
-      <td style="background:#f5f7fb;padding:12px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
+      <td style="background:#f5f7fb;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
         Sent to HR Email: {settings.HR_EMAIL}<br>
         © Pavan Kalyan & Associates — Chartered Accountants
       </td>
