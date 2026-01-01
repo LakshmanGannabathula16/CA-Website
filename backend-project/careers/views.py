@@ -199,6 +199,7 @@ def live_news(request):
     _LIVE_NEWS_CACHE["ts"] = now_ts
     _LIVE_NEWS_CACHE["data"] = final
 
+
 @csrf_exempt
 def apply_form(request):
 
@@ -206,17 +207,14 @@ def apply_form(request):
         return JsonResponse({"ok": False, "message": "Invalid request"}, status=405)
 
     try:
-        import base64, requests
-        from django.conf import settings
-
         data = request.POST
         files = request.FILES
 
         form_type = data.get("formType", "application")
 
-        # -------------------------------------------------------------
-        # CONTACT FORM (NO LOGO)
-        # -------------------------------------------------------------
+        # ============================================================
+        # CONTACT FORM
+        # ============================================================
         if form_type == "contact":
 
             name = data.get("name", "")
@@ -226,51 +224,57 @@ def apply_form(request):
             message = data.get("message", "")
 
             html_body = f"""
-<div style="font-family:Arial,Helvetica,sans-serif;background:#eef1f6;padding:6px 0;">
-  <table cellpadding="0" cellspacing="0"
-    style="
-      width:100%;
-      max-width:680px;
-      margin-left:auto;
-      margin-right:auto;
-      background:#ffffff;
-      border-radius:14px;
-      border:1px solid #d9dde5;
-    ">
-
-    <!-- HEADER -->
+<div style="margin:0;padding:0;background:#eef1f6;width:100%;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#eef1f6;">
     <tr>
-      <td style="background:#0A1A44;padding:16px;border-radius:14px 14px 0 0;color:#fff;text-align:center;">
-        <div style="font-size:18px;font-weight:800;">Pavan Kalyan & Associates</div>
-        <div style="font-size:12px;opacity:.9;">Chartered Accountants</div>
-      </td>
-    </tr>
+      <td align="center" style="padding:12px 8px;">
 
-    <!-- BODY -->
-    <tr>
-      <td style="padding:10px 10px;font-size:14px;color:#222;">
+        <table cellpadding="0" cellspacing="0" width="100%" style="max-width:720px;background:#ffffff;border-radius:14px;border:1px solid #d9dde5;overflow:hidden;">
 
-        <h3 style="margin:0 0 10px;">Contact Details</h3>
+          <!-- HEADER -->
+          <tr>
+            <td style="background:#0A1A44;padding:14px 14px 12px 14px;">
+              <table width="100%">
+                <tr>
+                  <td width="60">
+                    <img src="https://ca-website-qj5u.onrender.com/static/ca-logo.png" style="width:50px;border-radius:8px;">
+                  </td>
+                  <td style="color:#ffffff;">
+                    <div style="font-size:18px;font-weight:800;">Pavan Kalyan & Associates</div>
+                    <div style="font-size:12px;opacity:.9;">Chartered Accountants</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-        <table width="100%" style="line-height:1.9; table-layout:fixed;">
-          <tr><td width="170"><b>Name:</b></td><td>{name}</td></tr>
-          <tr><td><b>Email:</b></td><td>{email}</td></tr>
-          <tr><td><b>Mobile:</b></td><td>{number}</td></tr>
-          <tr><td><b>City:</b></td><td>{city}</td></tr>
-          <tr><td><b>Message:</b></td><td>{message}</td></tr>
+          <!-- BODY -->
+          <tr>
+            <td style="padding:14px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1c1c1c;">
+              <h3 style="margin:0 0 8px;">Contact Enquiry</h3>
+
+              <table width="100%" style="line-height:1.9;">
+                <tr><td width="170"><b>Name:</b></td><td>{name}</td></tr>
+                <tr><td><b>Email:</b></td><td>{email}</td></tr>
+                <tr><td><b>Mobile:</b></td><td>{number}</td></tr>
+                <tr><td><b>City:</b></td><td>{city}</td></tr>
+                <tr><td><b>Message:</b></td><td>{message}</td></tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="background:#f5f7fb;padding:10px 12px;text-align:center;font-size:11px;color:#666;">
+              Sent to HR Email: {settings.HR_EMAIL}<br>
+              © Pavan Kalyan & Associates — Chartered Accountants
+            </td>
+          </tr>
+
         </table>
 
       </td>
     </tr>
-
-    <!-- FOOTER -->
-    <tr>
-      <td style="background:#f5f7fb;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
-        Sent to HR Email: {settings.HR_EMAIL}<br>
-        © Pavan Kalyan & Associates — Chartered Accountants
-      </td>
-    </tr>
-
   </table>
 </div>
 """
@@ -278,7 +282,7 @@ def apply_form(request):
             payload = {
                 "personalizations": [{
                     "to": [{"email": settings.HR_EMAIL}],
-                   "subject": f"Pavan Kalyan & Associates — Contact Enquiry — {name}",
+                    "subject": f"Pavan Kalyan & Associates — Contact Enquiry — {name}",
                 }],
                 "from": {"email": settings.DEFAULT_FROM_EMAIL},
                 "reply_to": {"email": email},
@@ -300,9 +304,9 @@ def apply_form(request):
 
             return JsonResponse({"ok": True, "message": "Message sent"})
 
-        # -------------------------------------------------------------
-        # JOB APPLICATION (NO LOGO)
-        # -------------------------------------------------------------
+        # ============================================================
+        # JOB APPLICATION FORM
+        # ============================================================
 
         first = data.get("firstName", "")
         last = data.get("lastName", "")
@@ -320,93 +324,92 @@ def apply_form(request):
         comments = data.get("comments", "")
 
         html_body = f"""
-<div style="font-family:Arial,Helvetica,sans-serif;background:#eef1f6;padding:6px 0;">
-  <table cellpadding="0" cellspacing="0"
-    style="
-      width:100%;
-      max-width:680px;
-      margin-left:auto;
-      margin-right:auto;
-      background:#ffffff;
-      border-radius:14px;
-      border:1px solid #d9dde5;
-    ">
-
-    <!-- HEADER -->
+<div style="margin:0;padding:0;background:#eef1f6;width:100%;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#eef1f6;">
     <tr>
-      <td style="background:#0A1A44;padding:16px;border-radius:14px 14px 0 0;color:#fff;text-align:center;">
-        <div style="font-size:18px;font-weight:800;">Pavan Kalyan & Associates</div>
-        <div style="font-size:12px;opacity:.9;">Chartered Accountants</div>
-      </td>
-    </tr>
+      <td align="center" style="padding:12px 8px;">
 
-    <!-- BODY -->
-    <tr>
-      <td style="padding:10px 10px;font-size:14px;color:#222;">
+        <table cellpadding="0" cellspacing="0" width="100%" style="max-width:720px;background:#ffffff;border-radius:14px;border:1px solid #d9dde5;overflow:hidden;">
 
-        <h3 style="margin:0 0 10px;">Personal Details</h3>
+          <!-- HEADER -->
+          <tr>
+            <td style="background:#0A1A44;padding:14px 14px 12px 14px;">
+              <table width="100%">
+                <tr>
+                  <td width="60">
+                    <img src="https://ca-website-qj5u.onrender.com/static/ca-logo.png" style="width:50px;border-radius:8px;">
+                  </td>
+                  <td style="color:#ffffff;">
+                    <div style="font-size:18px;font-weight:800;">Pavan Kalyan & Associates</div>
+                    <div style="font-size:12px;opacity:.9;">Chartered Accountants</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-        <table width="100%" style="line-height:1.9; table-layout:fixed;">
-          <tr><td width="170"><b>Name:</b></td><td>{first} {last}</td></tr>
-          <tr><td><b>Email:</b></td><td>{email}</td></tr>
-          <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
-          <tr><td><b>Gender:</b></td><td>{gender or "—"}</td></tr>
-          <tr><td><b>Date of Birth:</b></td><td>{dob or "—"}</td></tr>
+          <!-- BODY -->
+          <tr>
+            <td style="padding:14px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1c1c1c;">
+
+              <h3 style="margin:0 0 8px;">Job Application</h3>
+
+              <h4 style="margin:6px 0;">Personal Details</h4>
+              <table width="100%" style="line-height:1.9;">
+                <tr><td width="170"><b>Name:</b></td><td>{first} {last}</td></tr>
+                <tr><td><b>Email:</b></td><td>{email}</td></tr>
+                <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
+                <tr><td><b>Gender:</b></td><td>{gender or "—"}</td></tr>
+                <tr><td><b>Date of Birth:</b></td><td>{dob or "—"}</td></tr>
+              </table>
+
+              <hr style="border:none;border-top:1px solid #e3e6ef;margin:10px 0;">
+
+              <h4 style="margin:6px 0;">Professional Details</h4>
+              <table width="100%" style="line-height:1.9;">
+                <tr><td width="170"><b>Position:</b></td><td>{position}</td></tr>
+                <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
+                <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
+                <tr><td><b>Experience:</b></td><td>{experienceYear or "0"} Years {experienceMonth or "0"} Months</td></tr>
+              </table>
+
+              <hr style="border:none;border-top:1px solid #e3e6ef;margin:10px 0;">
+
+              <h4 style="margin:6px 0;">Additional Information</h4>
+              <table width="100%" style="line-height:1.9;">
+                <tr><td width="170"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
+                <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
+              </table>
+
+              <div style="margin-top:12px;background:#0A1A44;color:#ffffff;padding:10px;border-radius:8px;text-align:center;font-size:13px;">
+                The applicant’s resume is attached with this email.
+              </div>
+
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="background:#f5f7fb;padding:10px 12px;text-align:center;font-size:11px;color:#666;">
+              Sent to HR Email: {settings.HR_EMAIL}<br>
+              © Pavan Kalyan & Associates — Chartered Accountants
+            </td>
+          </tr>
+
         </table>
 
-        <hr style="border:none;border-top:1px solid #e3e6ef;margin:10px 0;">
-
-        <h3 style="margin:0 0 10px;">Professional Details</h3>
-
-        <table width="100%" style="line-height:1.9; table-layout:fixed;">
-          <tr><td width="170"><b>Position:</b></td><td>{position}</td></tr>
-          <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
-          <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
-          <tr><td><b>Experience:</b></td><td>{experienceYear or "0"} Years {experienceMonth or "0"} Months</td></tr>
-        </table>
-
-        <hr style="border:none;border-top:1px solid #e3e6ef;margin:10px 0;">
-
-        <h3 style="margin:0 0 10px;">Additional Information</h3>
-
-        <table width="100%" style="line-height:1.9; table-layout:fixed;">
-          <tr><td width="170"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
-          <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
-        </table>
-
-        <div style="
-          margin-top:10px;
-          background:#0A1A44;
-          color:#ffffff;
-          padding:10px;
-          border-radius:8px;
-          text-align:center;
-          font-size:13px;
-          width:100%;
-          box-sizing:border-box;
-        ">
-          The applicant’s resume is attached with this email.
-        </div>
-
       </td>
     </tr>
-
-    <!-- FOOTER -->
-    <tr>
-      <td style="background:#f5f7fb;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
-        Sent to HR Email: {settings.HR_EMAIL}<br>
-        © Pavan Kalyan & Associates — Chartered Accountants
-      </td>
-    </tr>
-
   </table>
 </div>
 """
 
         attachments = []
+
         if "resume" in files:
             resume = files["resume"]
             encoded = base64.b64encode(resume.read()).decode()
+
             attachments.append({
                 "content": encoded,
                 "type": resume.content_type,
