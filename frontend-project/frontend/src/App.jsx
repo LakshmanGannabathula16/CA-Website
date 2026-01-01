@@ -12,7 +12,7 @@ import Contact from "./pages/Contact";
 import AdminLogin from "./pages/AdminLogin";
 import Careers from "./pages/Careers";
 
-import AllNews from "./pages/AllNews";
+import AllNews from "./pages/Allnews";
 import DueDates from "./pages/DueDates";
 import NotFound from "./pages/NotFound";
 
