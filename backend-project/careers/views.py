@@ -198,6 +198,8 @@ def live_news(request):
 
     _LIVE_NEWS_CACHE["ts"] = now_ts
     _LIVE_NEWS_CACHE["data"] = final
+    return JsonResponse(final, safe=False)
+    
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
