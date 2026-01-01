@@ -6,7 +6,7 @@ import requests
 import feedparser
 import time
 import calendar
-import base64
+import base64,os
 from pathlib import Path
 from datetime import datetime, timezone
 from bs4 import BeautifulSoup
