@@ -199,7 +199,9 @@ def live_news(request):
     _LIVE_NEWS_CACHE["ts"] = now_ts
     _LIVE_NEWS_CACHE["data"] = final
     return JsonResponse(final, safe=False)
-    from django.http import JsonResponse
+
+
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import base64, os, requests
@@ -241,11 +243,14 @@ def apply_form(request):
           <!-- HEADER -->
           <tr>
             <td style="background:#091a44;padding:14px 12px;">
-              <table width="100%" cellpadding="0" cellspacing="0" style="width:100%;">
+              <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
 
                   <td width="64" valign="middle" style="text-align:left;">
-                    <img src="cid:logo123" width="52" style="display:block;border-radius:10px;">
+                    <img
+                      src="https://ca-website-qj5u.onrender.com/static/ca-logo.png"
+                      width="52"
+                      style="display:block;border-radius:10px;">
                   </td>
 
                   <td valign="middle" style="text-align:center;">
@@ -308,24 +313,7 @@ def apply_form(request):
                     {"type": "text/plain", "value": "Contact enquiry"},
                     {"type": "text/html", "value": html_body},
                 ],
-                "attachments": []
             }
-
-            # INLINE LOGO
-            try:
-                logo_path = os.path.join(settings.BASE_DIR, "backend", "static", "ca-logo.png")
-                with open(logo_path, "rb") as f:
-                    logo_encoded = base64.b64encode(f.read()).decode()
-
-                payload["attachments"].append({
-                    "content": logo_encoded,
-                    "type": "image/png",
-                    "filename": "logo.png",
-                    "disposition": "inline",
-                    "content_id": "logo123"
-                })
-            except Exception as e:
-                print("Logo attach error:", e)
 
             requests.post(
                 "https://api.sendgrid.com/v3/mail/send",
@@ -375,7 +363,10 @@ def apply_form(request):
                 <tr>
 
                   <td width="64" valign="middle" style="text-align:left;">
-                    <img src="cid:logo123" width="52" style="display:block;border-radius:10px;">
+                    <img
+                      src="https://ca-website-qj5u.onrender.com/static/ca-logo.png"
+                      width="52"
+                      style="display:block;border-radius:10px;">
                   </td>
 
                   <td valign="middle" style="text-align:center;">
@@ -475,24 +466,8 @@ def apply_form(request):
                 {"type": "text/plain", "value": "Job application"},
                 {"type": "text/html", "value": html_body},
             ],
-            "attachments": attachments
+            "attachments": attachments,
         }
-
-        # INLINE LOGO
-        try:
-            logo_path = os.path.join(settings.BASE_DIR, "static", "ca-logo.png")
-            with open(logo_path, "rb") as f:
-                logo_encoded = base64.b64encode(f.read()).decode()
-
-            payload["attachments"].append({
-                "content": logo_encoded,
-                "type": "image/png",
-                "filename": "logo.png",
-                "disposition": "inline",
-                "content_id": "logo123"
-            })
-        except Exception as e:
-            print("Logo attach error:", e)
 
         requests.post(
             "https://api.sendgrid.com/v3/mail/send",
@@ -509,4 +484,3 @@ def apply_form(request):
     except Exception as e:
         print("APPLY_FORM ERROR:", e)
         return JsonResponse({"ok": False, "message": "Server error"}, status=500)
-
