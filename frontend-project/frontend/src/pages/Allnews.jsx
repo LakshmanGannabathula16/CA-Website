@@ -17,7 +17,7 @@ function autoCategorize(title = "") {
     return "Other";
 }
 
-export default function AllNews() {
+export default function Allnews() {
     const [loading, setLoading] = useState(true);
     const [allItems, setAllItems] = useState([]);
 

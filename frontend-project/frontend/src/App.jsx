@@ -12,7 +12,7 @@ import Contact from "./pages/Contact";
 import AdminLogin from "./pages/AdminLogin";
 import Careers from "./pages/Careers";
 
-import AllNews from "./pages/Allnews";
+import Allnews from "./pages/Allnews";
 import DueDates from "./pages/DueDates";
 import NotFound from "./pages/NotFound";
 
@@ -45,7 +45,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/careers" element={<Careers />} />
 
-          <Route path="/news" element={<AllNews />} />
+          <Route path="/news" element={<Allnews />} />
           <Route path="/due-dates" element={<DueDates />} />
 
           <Route path="/services/corporate-services" element={<CorporateServices />} />
