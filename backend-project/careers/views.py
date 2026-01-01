@@ -200,6 +200,12 @@ def live_news(request):
     _LIVE_NEWS_CACHE["data"] = final
 
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import base64, requests, os
+
+
 @csrf_exempt
 def apply_form(request):
 
@@ -209,6 +215,14 @@ def apply_form(request):
     try:
         data = request.POST
         files = request.FILES
+
+        # ================= INLINE LOGO =================
+        logo_path = os.path.join(settings.BASE_DIR, "static", "ca-logo.png")
+        logo_content = None
+
+        if os.path.exists(logo_path):
+            with open(logo_path, "rb") as f:
+                logo_content = base64.b64encode(f.read()).decode()
 
         form_type = data.get("formType", "application")
 
@@ -237,7 +251,7 @@ def apply_form(request):
               <table width="100%">
                 <tr>
                   <td width="60">
-                    <img src="https://ca-website-qj5u.onrender.com/static/ca-logo.png" style="width:50px;border-radius:8px;">
+                    <img src="cid:logo123" style="width:50px;border-radius:8px;">
                   </td>
                   <td style="color:#ffffff;">
                     <div style="font-size:18px;font-weight:800;">Pavan Kalyan & Associates</div>
@@ -290,24 +304,37 @@ def apply_form(request):
                     {"type": "text/plain", "value": "Contact enquiry"},
                     {"type": "text/html", "value": html_body},
                 ],
+                "attachments": []
             }
 
-            requests.post(
+            # logo inline
+            if logo_content:
+                payload["attachments"].append({
+                    "content": logo_content,
+                    "type": "image/png",
+                    "filename": "logo.png",
+                    "disposition": "inline",
+                    "content_id": "logo123"
+                })
+
+            res = requests.post(
                 "https://api.sendgrid.com/v3/mail/send",
                 json=payload,
                 headers={
                     "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
                     "Content-Type": "application/json",
                 },
-                timeout=15,
+                timeout=20,
             )
+
+            print("CONTACT STATUS:", res.status_code)
+            print("CONTACT RESPONSE:", res.text)
 
             return JsonResponse({"ok": True, "message": "Message sent"})
 
         # ============================================================
-        # JOB APPLICATION FORM
+        # JOB APPLICATION
         # ============================================================
-
         first = data.get("firstName", "")
         last = data.get("lastName", "")
         email = data.get("email", "")
@@ -337,7 +364,7 @@ def apply_form(request):
               <table width="100%">
                 <tr>
                   <td width="60">
-                    <img src="https://ca-website-qj5u.onrender.com/static/ca-logo.png" style="width:50px;border-radius:8px;">
+                    <img src="cid:logo123" style="width:50px;border-radius:8px;">
                   </td>
                   <td style="color:#ffffff;">
                     <div style="font-size:18px;font-weight:800;">Pavan Kalyan & Associates</div>
@@ -428,18 +455,31 @@ def apply_form(request):
                 {"type": "text/plain", "value": "Job application"},
                 {"type": "text/html", "value": html_body},
             ],
-            "attachments": attachments or None,
+            "attachments": attachments,
         }
 
-        requests.post(
+        # logo inline
+        if logo_content:
+            payload["attachments"].append({
+                "content": logo_content,
+                "type": "image/png",
+                "filename": "logo.png",
+                "disposition": "inline",
+                "content_id": "logo123"
+            })
+
+        res = requests.post(
             "https://api.sendgrid.com/v3/mail/send",
             json=payload,
             headers={
                 "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
                 "Content-Type": "application/json",
             },
-            timeout=15,
+            timeout=20,
         )
+
+        print("JOB STATUS:", res.status_code)
+        print("JOB RESPONSE:", res.text)
 
         return JsonResponse({"ok": True, "message": "Application sent"})
 
