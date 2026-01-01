@@ -279,7 +279,7 @@ def apply_form(request):
             payload = {
                 "personalizations": [{
                     "to": [{"email": settings.HR_EMAIL}],
-                    "subject": f"[Website] Contact Enquiry — {name}",
+                    "subject": f"Contact Enquiry — {name}",
                 }],
                 "from": {"email": settings.DEFAULT_FROM_EMAIL},
                 "reply_to": {"email": email},
@@ -418,7 +418,7 @@ def apply_form(request):
         payload = {
             "personalizations": [{
                 "to": [{"email": settings.HR_EMAIL}],
-                "subject": f"[Website] Job Application — {first} {last}",
+                "subject": f"Job Application — {first} {last}",
             }],
             "from": {"email": settings.DEFAULT_FROM_EMAIL},
             "reply_to": {"email": email},
