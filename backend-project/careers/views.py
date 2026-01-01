@@ -313,7 +313,7 @@ def apply_form(request):
 
             # INLINE LOGO
             try:
-                logo_path = os.path.join(settings.BASE_DIR, "static", "ca-logo.png")
+                logo_path = os.path.join(settings.BASE_DIR, "backend", "static", "ca-logo.png")
                 with open(logo_path, "rb") as f:
                     logo_encoded = base64.b64encode(f.read()).decode()
 
