@@ -16,11 +16,13 @@ ALLOWED_HOSTS = [
     ".onrender.com",
     "127.0.0.1",
     "localhost",
+    "https://ca-website-gilt-one.vercel.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://ca-website-qj5u.onrender.com",
     "https://*.onrender.com",
+    "https://ca-website-gilt-one.vercel.app",
 ]
 
 INSTALLED_APPS = [
