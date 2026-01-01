@@ -208,16 +208,23 @@ def apply_form(request):
 
     try:
         import base64, requests
+        from django.conf import settings
 
         data = request.POST
         files = request.FILES
 
         form_type = data.get("formType", "application")
 
-        LOGO_URL = "https://ca-website-qj5u.onrender.com/static/ca-logo.png"
+        # -------------------------------------------------------------
+        # LOAD LOGO AND EMBED IT (GMAIL SAFE)
+        # -------------------------------------------------------------
+        logo_path = settings.BASE_DIR / "static" / "ca-logo.png"
+
+        with open(logo_path, "rb") as f:
+            LOGO_BASE64 = base64.b64encode(f.read()).decode()
 
         # -------------------------------------------------------------
-        # CONTACT FORM (CENTERED — MOBILE SAFE)
+        # CONTACT FORM
         # -------------------------------------------------------------
         if form_type == "contact":
 
@@ -240,14 +247,13 @@ def apply_form(request):
       border:1px solid #d9dde5;
     ">
 
-    <!-- HEADER -->
     <tr>
       <td style="background:#0A1A44;padding:16px;border-radius:14px 14px 0 0;color:#fff;">
         <table width="100%">
           <tr>
 
             <td width="60">
-              <img src="{LOGO_URL}" style="width:54px;display:block;">
+              <img src="cid:logo" style="width:54px;display:block;">
             </td>
 
             <td align="center">
@@ -262,7 +268,6 @@ def apply_form(request):
       </td>
     </tr>
 
-    <!-- BODY -->
     <tr>
       <td style="padding:10px 10px;font-size:14px;color:#222;">
 
@@ -279,7 +284,6 @@ def apply_form(request):
       </td>
     </tr>
 
-    <!-- FOOTER -->
     <tr>
       <td style="background:#f5f7fb;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
         Sent to HR Email: {settings.HR_EMAIL}<br>
@@ -302,6 +306,15 @@ def apply_form(request):
                     {"type": "text/plain", "value": "Contact enquiry"},
                     {"type": "text/html", "value": html_body},
                 ],
+                "attachments": [
+                    {
+                        "content": LOGO_BASE64,
+                        "type": "image/png",
+                        "filename": "logo.png",
+                        "disposition": "inline",
+                        "content_id": "logo"
+                    }
+                ]
             }
 
             requests.post(
@@ -317,7 +330,7 @@ def apply_form(request):
             return JsonResponse({"ok": True, "message": "Message sent"})
 
         # -------------------------------------------------------------
-        # JOB APPLICATION  (CENTERED — MOBILE SAFE)
+        # JOB APPLICATION
         # -------------------------------------------------------------
 
         first = data.get("firstName", "")
@@ -348,14 +361,13 @@ def apply_form(request):
       border:1px solid #d9dde5;
     ">
 
-    <!-- HEADER -->
     <tr>
       <td style="background:#0A1A44;padding:16px;border-radius:14px 14px 0 0;color:#fff;">
         <table width="100%">
           <tr>
 
             <td width="60">
-              <img src="{LOGO_URL}" style="width:54px;display:block;">
+              <img src="cid:logo" style="width:54px;display:block;">
             </td>
 
             <td align="center">
@@ -370,7 +382,6 @@ def apply_form(request):
       </td>
     </tr>
 
-    <!-- BODY -->
     <tr>
       <td style="padding:10px 10px;font-size:14px;color:#222;">
 
@@ -421,7 +432,6 @@ def apply_form(request):
       </td>
     </tr>
 
-    <!-- FOOTER -->
     <tr>
       <td style="background:#f5f7fb;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
         Sent to HR Email: {settings.HR_EMAIL}<br>
@@ -433,7 +443,6 @@ def apply_form(request):
 </div>
 """
 
-        # ATTACHMENTS
         attachments = []
         if "resume" in files:
             resume = files["resume"]
@@ -456,7 +465,15 @@ def apply_form(request):
                 {"type": "text/plain", "value": "Job application"},
                 {"type": "text/html", "value": html_body},
             ],
-            "attachments": attachments or None,
+            "attachments": [
+                {
+                    "content": LOGO_BASE64,
+                    "type": "image/png",
+                    "filename": "logo.png",
+                    "disposition": "inline",
+                    "content_id": "logo"
+                }
+            ] + (attachments if attachments else []),
         }
 
         requests.post(
