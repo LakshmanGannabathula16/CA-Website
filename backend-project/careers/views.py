@@ -216,15 +216,7 @@ def apply_form(request):
         form_type = data.get("formType", "application")
 
         # -------------------------------------------------------------
-        # LOAD LOGO AND EMBED IT (GMAIL SAFE)
-        # -------------------------------------------------------------
-        logo_path = settings.BASE_DIR / "static" / "ca-logo.png"
-
-        with open(logo_path, "rb") as f:
-            LOGO_BASE64 = base64.b64encode(f.read()).decode()
-
-        # -------------------------------------------------------------
-        # CONTACT FORM
+        # CONTACT FORM (NO LOGO)
         # -------------------------------------------------------------
         if form_type == "contact":
 
@@ -247,27 +239,15 @@ def apply_form(request):
       border:1px solid #d9dde5;
     ">
 
+    <!-- HEADER -->
     <tr>
-      <td style="background:#0A1A44;padding:16px;border-radius:14px 14px 0 0;color:#fff;">
-        <table width="100%">
-          <tr>
-
-            <td width="60">
-              <img src="cid:logo" style="width:54px;display:block;">
-            </td>
-
-            <td align="center">
-              <div style="font-size:18px;font-weight:800;">Pavan Kalyan & Associates</div>
-              <div style="font-size:12px;opacity:.9;">Chartered Accountants</div>
-            </td>
-
-            <td width="60">&nbsp;</td>
-
-          </tr>
-        </table>
+      <td style="background:#0A1A44;padding:16px;border-radius:14px 14px 0 0;color:#fff;text-align:center;">
+        <div style="font-size:18px;font-weight:800;">Pavan Kalyan & Associates</div>
+        <div style="font-size:12px;opacity:.9;">Chartered Accountants</div>
       </td>
     </tr>
 
+    <!-- BODY -->
     <tr>
       <td style="padding:10px 10px;font-size:14px;color:#222;">
 
@@ -284,6 +264,7 @@ def apply_form(request):
       </td>
     </tr>
 
+    <!-- FOOTER -->
     <tr>
       <td style="background:#f5f7fb;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
         Sent to HR Email: {settings.HR_EMAIL}<br>
@@ -306,15 +287,6 @@ def apply_form(request):
                     {"type": "text/plain", "value": "Contact enquiry"},
                     {"type": "text/html", "value": html_body},
                 ],
-                "attachments": [
-                    {
-                        "content": LOGO_BASE64,
-                        "type": "image/png",
-                        "filename": "logo.png",
-                        "disposition": "inline",
-                        "content_id": "logo"
-                    }
-                ]
             }
 
             requests.post(
@@ -330,7 +302,7 @@ def apply_form(request):
             return JsonResponse({"ok": True, "message": "Message sent"})
 
         # -------------------------------------------------------------
-        # JOB APPLICATION
+        # JOB APPLICATION (NO LOGO)
         # -------------------------------------------------------------
 
         first = data.get("firstName", "")
@@ -361,27 +333,15 @@ def apply_form(request):
       border:1px solid #d9dde5;
     ">
 
+    <!-- HEADER -->
     <tr>
-      <td style="background:#0A1A44;padding:16px;border-radius:14px 14px 0 0;color:#fff;">
-        <table width="100%">
-          <tr>
-
-            <td width="60">
-              <img src="cid:logo" style="width:54px;display:block;">
-            </td>
-
-            <td align="center">
-              <div style="font-size:18px;font-weight:800;">Pavan Kalyan & Associates</div>
-              <div style="font-size:12px;opacity:.9;">Chartered Accountants</div>
-            </td>
-
-            <td width="60">&nbsp;</td>
-
-          </tr>
-        </table>
+      <td style="background:#0A1A44;padding:16px;border-radius:14px 14px 0 0;color:#fff;text-align:center;">
+        <div style="font-size:18px;font-weight:800;">Pavan Kalyan & Associates</div>
+        <div style="font-size:12px;opacity:.9;">Chartered Accountants</div>
       </td>
     </tr>
 
+    <!-- BODY -->
     <tr>
       <td style="padding:10px 10px;font-size:14px;color:#222;">
 
@@ -432,6 +392,7 @@ def apply_form(request):
       </td>
     </tr>
 
+    <!-- FOOTER -->
     <tr>
       <td style="background:#f5f7fb;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
         Sent to HR Email: {settings.HR_EMAIL}<br>
@@ -465,15 +426,7 @@ def apply_form(request):
                 {"type": "text/plain", "value": "Job application"},
                 {"type": "text/html", "value": html_body},
             ],
-            "attachments": [
-                {
-                    "content": LOGO_BASE64,
-                    "type": "image/png",
-                    "filename": "logo.png",
-                    "disposition": "inline",
-                    "content_id": "logo"
-                }
-            ] + (attachments if attachments else []),
+            "attachments": attachments or None,
         }
 
         requests.post(
