@@ -207,7 +207,6 @@ def live_news(request):
     _LIVE_NEWS_CACHE["ts"] = now_ts
     _LIVE_NEWS_CACHE["data"] = final
     return JsonResponse(final, safe=False)
-
 @csrf_exempt
 def apply_form(request):
 
@@ -240,18 +239,30 @@ def apply_form(request):
 <tr>
 <td align="center">
 
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;max-width:100%;">
+<table width="760" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;">
 
+<!-- HEADER -->
 <tr>
-<td style="background:#091a44;padding:40px 10px;text-align:center;">
-<div style="color:#ffffff;font-size:24px;font-weight:900;">
-Contact Enquiry
-</div>
+<td style="background:#091a44;padding:22px 10px;border-radius:14px 14px 0 0;">
+<table width="100%">
+<tr>
+<td align="center" style="color:#ffffff;font-size:20px;font-weight:900;padding:6px 0;">
+Pavan Kalyan & Associates
+<br>
+<span style="font-size:13px;color:#dfe5ff;font-weight:600;">
+Chartered Accountants
+</span>
+</td>
+</tr>
+</table>
 </td>
 </tr>
 
+<!-- BODY -->
 <tr>
 <td style="padding:16px;font-size:14px;color:#1c1c1c;">
+
+<h4 style="margin:0 0 10px;">Contact Enquiry</h4>
 
 <table width="100%" style="line-height:2;">
 <tr><td width="180"><b>Name:</b></td><td>{name}</td></tr>
@@ -264,9 +275,10 @@ Contact Enquiry
 </td>
 </tr>
 
+<!-- FOOTER -->
 <tr>
-<td style="background:#f6f8ff;padding:10px;text-align:center;font-size:11px;color:#666;">
-Sent to HR Email: {settings.HR_EMAIL}<br>
+<td style="background:#f6f8ff;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
+Sent to HR: {settings.HR_EMAIL}<br>
 © Pavan Kalyan & Associates — Chartered Accountants
 </td>
 </tr>
@@ -334,18 +346,30 @@ Sent to HR Email: {settings.HR_EMAIL}<br>
 <tr>
 <td align="center">
 
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;max-width:100%;">
+<table width="760" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;">
 
+<!-- HEADER -->
 <tr>
-<td style="background:#091a44;padding:40px 10px;text-align:center;">
-<div style="color:#ffffff;font-size:24px;font-weight:900;">
-Job Application
-</div>
+<td style="background:#091a44;padding:22px 10px;border-radius:14px 14px 0 0;">
+<table width="100%">
+<tr>
+<td align="center" style="color:#ffffff;font-size:20px;font-weight:900;padding:6px 0;">
+Pavan Kalyan & Associates
+<br>
+<span style="font-size:13px;color:#dfe5ff;font-weight:600;">
+Chartered Accountants
+</span>
+</td>
+</tr>
+</table>
 </td>
 </tr>
 
+<!-- BODY -->
 <tr>
 <td style="padding:16px;font-size:14px;color:#1c1c1c;">
+
+<h4 style="margin:0 0 10px;">Job Application</h4>
 
 <h4>Personal Details</h4>
 
@@ -361,7 +385,7 @@ Job Application
 
 <h4>Professional Details</h4>
 
-<table width="100%" style="line-height:2;">
+<table width="100%" style="line-height:2%;">
 <tr><td width="200"><b>Position:</b></td><td>{position}</td></tr>
 <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
 <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
@@ -372,7 +396,7 @@ Job Application
 
 <h4>Additional Information</h4>
 
-<table width="100%" style="line-height:2;">
+<table width="100%" style="line-height:2%;">
 <tr><td width="200"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
 <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
 </table>
@@ -384,9 +408,10 @@ The applicant’s resume is attached with this email.
 </td>
 </tr>
 
+<!-- FOOTER -->
 <tr>
-<td style="background:#f6f8ff;padding:10px;text-align:center;font-size:11px;color:#666;">
-Sent to HR Email: {settings.HR_EMAIL}<br>
+<td style="background:#f6f8ff;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
+Sent to HR: {settings.HR_EMAIL}<br>
 © Pavan Kalyan & Associates — Chartered Accountants
 </td>
 </tr>
