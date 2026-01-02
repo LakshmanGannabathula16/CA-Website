@@ -208,6 +208,12 @@ def live_news(request):
     _LIVE_NEWS_CACHE["data"] = final
     return JsonResponse(final, safe=False)
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import base64, requests, os
+
+
 @csrf_exempt
 def apply_form(request):
 
@@ -217,6 +223,14 @@ def apply_form(request):
     try:
         data = request.POST
         files = request.FILES
+
+        # -------- INLINE LOGO (never breaks) --------
+        logo_path = os.path.join(settings.BASE_DIR, "static", "ca-logo.png")
+        logo_content = None
+
+        if os.path.exists(logo_path):
+            with open(logo_path, "rb") as f:
+                logo_content = base64.b64encode(f.read()).decode()
 
         form_type = data.get("formType", "application")
 
@@ -236,48 +250,46 @@ def apply_form(request):
 <html>
 <body style="margin:0;padding:0;background:#e9ecf4;">
 
-<table width="100%" cellpadding="0" cellspacing="0" style="padding:14px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:16px 0;">
 <tr>
 <td align="center">
 
-<!-- FIXED WIDTH CARD -->
-<table width="760" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;">
+<table cellpadding="0" cellspacing="0" width="100%" style="max-width:920px;background:#ffffff;border-radius:16px;border:1px solid #d8deef;font-family:Arial,Helvetica,sans-serif;">
 
+<!-- HEADER -->
 <tr>
-<td style="background:#091a44;padding:18px 10px;">
+<td style="background:#091a44;padding:18px 20px;">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
 
-<table width="100%">
-<tr>
+      <td width="65" align="center">
+        <img src="cid:logo123" style="display:block;width:54px;border-radius:12px;">
+      </td>
 
-<td align="center">
-<img src="{LOGO_URL}" width="56" style="display:block;border-radius:10px;">
-</td>
+      <td align="center" style="color:#ffffff;padding-left:6px;">
+        <div style="font-size:20px;font-weight:900;line-height:1.2;">
+          Pavan Kalyan & Associates
+        </div>
+        <div style="font-size:13px;color:#dfe5ff;">
+          Chartered Accountants
+        </div>
+      </td>
 
-</tr>
-<tr>
-<td align="center" style="color:#ffffff;font-size:20px;font-weight:900;">
-Pavan Kalyan & Associates
-</td>
-</tr>
+      <td width="65"></td>
 
-<tr>
-<td align="center" style="color:#dfe5ff;font-size:13px;">
-Chartered Accountants
-</td>
-</tr>
-
-</table>
-
+    </tr>
+  </table>
 </td>
 </tr>
 
+<!-- BODY -->
 <tr>
-<td style="padding:16px;font-size:14px;color:#1c1c1c;">
+<td style="padding:18px 18px 12px;font-size:14px;color:#1c1c1c;">
 
-<h3 style="margin:4px 0 12px;">Contact Enquiry</h3>
+<h3 style="margin:4px 0 14px;">Contact Enquiry</h3>
 
-<table width="100%" style="line-height:2;">
-<tr><td width="180"><b>Name:</b></td><td>{name}</td></tr>
+<table width="100%" style="line-height:1.9;">
+<tr><td width="220"><b>Name:</b></td><td>{name}</td></tr>
 <tr><td><b>Email:</b></td><td>{email}</td></tr>
 <tr><td><b>Mobile:</b></td><td>{number}</td></tr>
 <tr><td><b>City:</b></td><td>{city}</td></tr>
@@ -287,8 +299,9 @@ Chartered Accountants
 </td>
 </tr>
 
+<!-- FOOTER -->
 <tr>
-<td style="background:#f6f8ff;padding:10px;text-align:center;font-size:11px;color:#666;">
+<td style="background:#f6f8ff;padding:10px 12px;text-align:center;font-size:11px;color:#666;">
 Sent to HR Email: {settings.HR_EMAIL}<br>
 © Pavan Kalyan & Associates — Chartered Accountants
 </td>
@@ -304,7 +317,6 @@ Sent to HR Email: {settings.HR_EMAIL}<br>
 </html>
 """
 
-
             payload = {
                 "personalizations": [{
                     "to": [{"email": settings.HR_EMAIL}],
@@ -316,7 +328,17 @@ Sent to HR Email: {settings.HR_EMAIL}<br>
                     {"type": "text/plain", "value": "Contact enquiry"},
                     {"type": "text/html", "value": html_body},
                 ],
+                "attachments": []
             }
+
+            if logo_content:
+                payload["attachments"].append({
+                    "content": logo_content,
+                    "type": "image/png",
+                    "filename": "logo.png",
+                    "disposition": "inline",
+                    "content_id": "logo123"
+                })
 
             requests.post(
                 "https://api.sendgrid.com/v3/mail/send",
@@ -325,7 +347,7 @@ Sent to HR Email: {settings.HR_EMAIL}<br>
                     "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
                     "Content-Type": "application/json",
                 },
-                timeout=15,
+                timeout=20,
             )
 
             return JsonResponse({"ok": True, "message": "Message sent"})
@@ -333,7 +355,6 @@ Sent to HR Email: {settings.HR_EMAIL}<br>
         # ============================================================
         # JOB APPLICATION
         # ============================================================
-
         first = data.get("firstName", "")
         last = data.get("lastName", "")
         email = data.get("email", "")
@@ -354,48 +375,44 @@ Sent to HR Email: {settings.HR_EMAIL}<br>
 <html>
 <body style="margin:0;padding:0;background:#e9ecf4;">
 
-<table width="100%" cellpadding="0" cellspacing="0" style="padding:14px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:16px 0;">
 <tr>
 <td align="center">
 
-<table width="760" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;">
+<table cellpadding="0" cellspacing="0" width="100%" style="max-width:920px;background:#ffffff;border-radius:16px;border:1px solid #d8deef;font-family:Arial,Helvetica,sans-serif;">
 
+<!-- HEADER -->
 <tr>
-<td style="background:#091a44;padding:18px 10px;">
+<td style="background:#091a44;padding:18px 20px;">
+  <table width="100%">
+    <tr>
 
-<table width="100%">
-<tr>
-<td align="center">
-<img src="{LOGO_URL}" width="56" style="display:block;border-radius:10px;">
+      <td width="65" align="center">
+        <img src="cid:logo123" style="display:block;width:54px;border-radius:12px;">
+      </td>
+
+      <td align="center" style="color:#ffffff;">
+        <div style="font-size:20px;font-weight:900;">Pavan Kalyan & Associates</div>
+        <div style="font-size:13px;color:#dfe5ff;">Chartered Accountants</div>
+      </td>
+
+      <td width="65"></td>
+
+    </tr>
+  </table>
 </td>
 </tr>
 
+<!-- BODY -->
 <tr>
-<td align="center" style="color:#ffffff;font-size:20px;font-weight:900;">
-Pavan Kalyan & Associates
-</td>
-</tr>
+<td style="padding:18px;font-size:14px;color:#1c1c1c;">
 
-<tr>
-<td align="center" style="color:#dfe5ff;font-size:13px;">
-Chartered Accountants
-</td>
-</tr>
-
-</table>
-
-</td>
-</tr>
-
-<tr>
-<td style="padding:16px;font-size:14px;color:#1c1c1c;">
-
-<h3 style="margin:0 0 12px;">Job Application</h3>
+<h3 style="margin:2px 0 10px;">Job Application</h3>
 
 <h4>Personal Details</h4>
 
 <table width="100%" style="line-height:2;">
-<tr><td width="200"><b>Name:</b></td><td>{first} {last}</td></tr>
+<tr><td width="220"><b>Name:</b></td><td>{first} {last}</td></tr>
 <tr><td><b>Email:</b></td><td>{email}</td></tr>
 <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
 <tr><td><b>Gender:</b></td><td>{gender or "—"}</td></tr>
@@ -407,7 +424,7 @@ Chartered Accountants
 <h4>Professional Details</h4>
 
 <table width="100%" style="line-height:2;">
-<tr><td width="200"><b>Position:</b></td><td>{position}</td></tr>
+<tr><td width="220"><b>Position:</b></td><td>{position}</td></tr>
 <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
 <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
 <tr><td><b>Experience:</b></td><td>{experienceYear or "0"} Years {experienceMonth or "0"} Months</td></tr>
@@ -418,7 +435,7 @@ Chartered Accountants
 <h4>Additional Information</h4>
 
 <table width="100%" style="line-height:2;">
-<tr><td width="200"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
+<tr><td width="220"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
 <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
 </table>
 
@@ -429,6 +446,7 @@ The applicant’s resume is attached with this email.
 </td>
 </tr>
 
+<!-- FOOTER -->
 <tr>
 <td style="background:#f6f8ff;padding:10px;text-align:center;font-size:11px;color:#666;">
 Sent to HR Email: {settings.HR_EMAIL}<br>
@@ -470,8 +488,17 @@ Sent to HR Email: {settings.HR_EMAIL}<br>
                 {"type": "text/plain", "value": "Job application"},
                 {"type": "text/html", "value": html_body},
             ],
-            "attachments": attachments
+            "attachments": attachments,
         }
+
+        if logo_content:
+            payload["attachments"].append({
+                "content": logo_content,
+                "type": "image/png",
+                "filename": "logo.png",
+                "disposition": "inline",
+                "content_id": "logo123"
+            })
 
         requests.post(
             "https://api.sendgrid.com/v3/mail/send",
@@ -480,7 +507,7 @@ Sent to HR Email: {settings.HR_EMAIL}<br>
                 "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
                 "Content-Type": "application/json",
             },
-            timeout=15,
+            timeout=20,
         )
 
         return JsonResponse({"ok": True, "message": "Application sent"})
