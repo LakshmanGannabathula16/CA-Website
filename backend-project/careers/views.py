@@ -207,13 +207,7 @@ def live_news(request):
     _LIVE_NEWS_CACHE["ts"] = now_ts
     _LIVE_NEWS_CACHE["data"] = final
     return JsonResponse(final, safe=False)
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
-import base64, requests
-
-
+    
 @csrf_exempt
 def apply_form(request):
 
@@ -227,13 +221,13 @@ def apply_form(request):
         form_type = data.get("formType", "application").strip().lower()
 
         # ============================================================
-        # CONTACT FORM  (UNCHANGED — EXACTLY YOUR TEMPLATE)
+        # CONTACT FORM
         # ============================================================
         if form_type == "contact":
 
             name = data.get("name", "")
-            number = data.get("number", "")
-            email = data.get("email", "")
+            phone = data.get("number", "")
+            contact_email = data.get("email", "")
             city = data.get("city", "")
             message = data.get("message", "")
 
@@ -248,7 +242,6 @@ def apply_form(request):
 
 <table width="760" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;">
 
-<!-- HEADER -->
 <tr>
 <td style="background:#091a44;padding:22px 10px;border-radius:14px 14px 0 0;">
 <table width="100%">
@@ -265,16 +258,14 @@ Chartered Accountants
 </td>
 </tr>
 
-<!-- BODY -->
 <tr>
 <td style="padding:16px;font-size:14px;color:#1c1c1c;">
-
-<h4 style="margin:0 0 10px;">Contact Enquiry</h4>
+<h4 style="margin:0 0 10px;text-align:center;">Contact Enquiry</h4>
 
 <table width="100%" style="line-height:2;">
 <tr><td width="180"><b>Name:</b></td><td>{name}</td></tr>
-<tr><td><b>Email:</b></td><td>{email}</td></tr>
-<tr><td><b>Mobile:</b></td><td>{number}</td></tr>
+<tr><td><b>Email:</b></td><td>{contact_email}</td></tr>
+<tr><td><b>Mobile:</b></td><td>{phone}</td></tr>
 <tr><td><b>City:</b></td><td>{city}</td></tr>
 <tr><td><b>Message:</b></td><td>{message}</td></tr>
 </table>
@@ -282,7 +273,6 @@ Chartered Accountants
 </td>
 </tr>
 
-<!-- FOOTER -->
 <tr>
 <td style="background:#f6f8ff;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
 Sent to HR: {settings.HR_EMAIL}<br>
@@ -291,7 +281,6 @@ Sent to HR: {settings.HR_EMAIL}<br>
 </tr>
 
 </table>
-
 </td>
 </tr>
 </table>
@@ -306,123 +295,7 @@ Sent to HR: {settings.HR_EMAIL}<br>
                     "subject": f"Contact Enquiry — {name}",
                 }],
                 "from": {"email": settings.DEFAULT_FROM_EMAIL},
-                "reply_to": {"email": email},
-                "content": [
-                    {"type": "text/plain", "value": "Contact enquiry"},
-                    {"type": "text/html", "value": html_body},
-                ],
-            }
-
-            requests.post(
-                "https://api.sendgrid.com/v3/mail/send",
-                json=payload,
-                headers={
-                    "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
-                    "Content-Type": "application/json",
-                },
-                timeout=15,
-            )
-
-            return JsonResponse({"ok": True, "message": "Message sent"})
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
-import base64, requests
-
-
-@csrf_exempt
-def apply_form(request):
-
-    if request.method != "POST":
-        return JsonResponse({"ok": False, "message": "Invalid request"}, status=405)
-
-    try:
-        data = request.POST
-        files = request.FILES
-
-        form_type = data.get("formType", "application").strip().lower()
-
-        # ============================================================
-        # CONTACT FORM  (UNCHANGED — EXACTLY YOUR TEMPLATE)
-        # ============================================================
-        if form_type == "contact":
-
-            name = data.get("name", "")
-            number = data.get("number", "")
-            email = data.get("email", "")
-            city = data.get("city", "")
-            message = data.get("message", "")
-
-            html_body = f"""
-<!DOCTYPE html>
-<html>
-<body style="margin:0;padding:0;background:#e9ecf4;">
-
-<table width="100%" cellpadding="0" cellspacing="0" style="padding:14px 0;">
-<tr>
-<td align="center">
-
-<table width="760" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;">
-
-<!-- HEADER -->
-<tr>
-<td style="background:#091a44;padding:22px 10px;border-radius:14px 14px 0 0;">
-<table width="100%">
-<tr>
-<td align="center" style="color:#ffffff;font-size:20px;font-weight:900;padding:6px 0;">
-Pavan Kalyan & Associates
-<br>
-<span style="font-size:13px;color:#dfe5ff;font-weight:600;">
-Chartered Accountants
-</span>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-
-<!-- BODY -->
-<tr>
-<td style="padding:16px;font-size:14px;color:#1c1c1c;">
-
-<h4 style="margin:0 0 10px;">Contact Enquiry</h4>
-
-<table width="100%" style="line-height:2;">
-<tr><td width="180"><b>Name:</b></td><td>{name}</td></tr>
-<tr><td><b>Email:</b></td><td>{email}</td></tr>
-<tr><td><b>Mobile:</b></td><td>{number}</td></tr>
-<tr><td><b>City:</b></td><td>{city}</td></tr>
-<tr><td><b>Message:</b></td><td>{message}</td></tr>
-</table>
-
-</td>
-</tr>
-
-<!-- FOOTER -->
-<tr>
-<td style="background:#f6f8ff;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
-Sent to HR: {settings.HR_EMAIL}<br>
-© Pavan Kalyan & Associates — Chartered Accountants
-</td>
-</tr>
-
-</table>
-
-</td>
-</tr>
-</table>
-
-</body>
-</html>
-"""
-
-            payload = {
-                "personalizations": [{
-                    "to": [{"email": settings.HR_EMAIL}],
-                    "subject": f"Contact Enquiry — {name}",
-                }],
-                "from": {"email": settings.DEFAULT_FROM_EMAIL},
-                "reply_to": {"email": email},
+                "reply_to": {"email": contact_email},
                 "content": [
                     {"type": "text/plain", "value": "Contact enquiry"},
                     {"type": "text/html", "value": html_body},
@@ -441,8 +314,9 @@ Sent to HR: {settings.HR_EMAIL}<br>
 
             return JsonResponse({"ok": True, "message": "Message sent"})
 
+
         # ============================================================
-        # JOB APPLICATION  (LEFT AS IS — NO CHANGE)
+        # JOB APPLICATION FORM
         # ============================================================
         elif form_type in ["application", "job"]:
 
@@ -495,22 +369,36 @@ Chartered Accountants
 Job Application
 </h3>
 
-<table width="100%" style="line-height:2;">
+<div style="background:#f1f3ff;border:1px solid #d9ddea;padding:8px 10px;border-radius:8px;font-weight:700;margin:10px 0;">
+Personal Details
+</div>
 
+<table width="100%" style="line-height:2;">
 <tr><td width="200"><b>Full Name:</b></td><td>{first} {last}</td></tr>
 <tr><td><b>Email:</b></td><td>{applicant_email}</td></tr>
 <tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
 <tr><td><b>Gender:</b></td><td>{gender or "—"}</td></tr>
 <tr><td><b>Date of Birth:</b></td><td>{dob or "—"}</td></tr>
+</table>
 
-<tr><td><b>Position:</b></td><td>{position}</td></tr>
+<div style="background:#f1f3ff;border:1px solid #d9ddea;padding:8px 10px;border-radius:8px;font-weight:700;margin:14px 0 8px;">
+Professional Details
+</div>
+
+<table width="100%" style="line-height:2;">
+<tr><td width="200"><b>Position Applied:</b></td><td>{position}</td></tr>
 <tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
 <tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
 <tr><td><b>Experience:</b></td><td>{experienceYear or "0"} Years {experienceMonth or "0"} Months</td></tr>
+</table>
 
-<tr><td><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
+<div style="background:#f1f3ff;border:1px solid #d9ddea;padding:8px 10px;border-radius:8px;font-weight:700;margin:14px 0 8px;">
+Additional Information
+</div>
+
+<table width="100%" style="line-height:2;">
+<tr><td width="200"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
 <tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
-
 </table>
 
 <div style="margin-top:14px;background:#091a44;color:#ffffff;padding:10px;border-radius:8px;text-align:center;">
@@ -528,7 +416,6 @@ Sent to HR: {settings.HR_EMAIL}<br>
 </tr>
 
 </table>
-
 </td>
 </tr>
 </table>
