@@ -255,7 +255,7 @@ def apply_form(request):
 Pavan Kalyan & Associates
 <br>
 <span style="font-size:12px;color:#dfe5ff;font-weight:600;">
-Contact Enquiry
+Chartered Accountants
 </span>
 </td>
 
