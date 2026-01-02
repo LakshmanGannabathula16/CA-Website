@@ -234,22 +234,40 @@ def apply_form(request):
             html_body = f"""
 <!DOCTYPE html>
 <html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Force minimum width -->
+<style>
+  body, table {
+    -webkit-text-size-adjust: 100% !important;
+    -ms-text-size-adjust: 100% !important;
+  }
+</style>
+</head>
+
 <body style="margin:0;padding:0;background:#e9ecf4;">
 
-<table width="100%" cellpadding="0" cellspacing="0" style="padding:14px 0;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:14px 0;">
 <tr>
 <td align="center">
 
-<table width="760" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;">
+<!-- MAIN CARD -->
+<table role="presentation"
+       cellpadding="0" cellspacing="0"
+       style="width:760px;min-width:760px;max-width:760px;background:#ffffff;
+              border-radius:14px;border:1px solid #d9ddea;
+              font-family:Arial,Helvetica,sans-serif;">
 
 <tr>
 <td style="background:#091a44;padding:22px 10px;border-radius:14px 14px 0 0;">
 <table width="100%">
 <tr>
-<td align="center" style="color:#ffffff;font-size:20px;font-weight:900;padding:6px 0;">
+<td align="center"
+    style="color:#ffffff;font-size:22px;font-weight:900;padding:6px 0;">
 Pavan Kalyan & Associates
 <br>
-<span style="font-size:13px;color:#dfe5ff;font-weight:600;">
+<span style="font-size:14px;color:#dfe5ff;font-weight:600;">
 Chartered Accountants
 </span>
 </td>
@@ -259,11 +277,11 @@ Chartered Accountants
 </tr>
 
 <tr>
-<td style="padding:16px;font-size:14px;color:#1c1c1c;">
-<h4 style="margin:0 0 10px;text-align:center;">Contact Enquiry</h4>
+<td style="padding:18px;font-size:15px;color:#1c1c1c;">
+<h4 style="margin:0 0 10px;text-align:center;font-size:16px;">Contact Enquiry</h4>
 
 <table width="100%" style="line-height:2;">
-<tr><td width="180"><b>Name:</b></td><td>{name}</td></tr>
+<tr><td width="200"><b>Name:</b></td><td>{name}</td></tr>
 <tr><td><b>Email:</b></td><td>{contact_email}</td></tr>
 <tr><td><b>Mobile:</b></td><td>{phone}</td></tr>
 <tr><td><b>City:</b></td><td>{city}</td></tr>
@@ -274,13 +292,15 @@ Chartered Accountants
 </tr>
 
 <tr>
-<td style="background:#f6f8ff;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
+<td style="background:#f6f8ff;padding:12px;text-align:center;
+           font-size:11px;color:#666;border-radius:0 0 14px 14px;">
 Sent to HR: {settings.HR_EMAIL}<br>
 © Pavan Kalyan & Associates — Chartered Accountants
 </td>
 </tr>
 
 </table>
+
 </td>
 </tr>
 </table>
@@ -338,19 +358,13 @@ Sent to HR: {settings.HR_EMAIL}<br>
             html_body = f"""
 <!DOCTYPE html>
 <html>
-<head>
-<!-- Force desktop width on mobile -->
-<meta name="viewport" content="width=760">
-</head>
-
 <body style="margin:0;padding:0;background:#e9ecf4;">
 
 <table width="100%" cellpadding="0" cellspacing="0" style="padding:14px 0;">
 <tr>
 <td align="center">
 
-<table width="760" cellpadding="0" cellspacing="0"
-style="width:760px;background:#ffffff;border-radius:14px;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;">
+<table width="760" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;">
 
 <tr>
 <td style="background:#091a44;padding:22px 10px;border-radius:14px 14px 0 0;">
@@ -370,15 +384,46 @@ Chartered Accountants
 
 <tr>
 <td style="padding:16px;font-size:14px;color:#1c1c1c;">
-<h4 style="margin:0 0 10px;text-align:center;">Contact Enquiry</h4>
+
+<h3 style="margin:0 0 14px;text-align:center;font-size:18px;">
+Job Application
+</h3>
+
+<div style="background:#f1f3ff;border:1px solid #d9ddea;padding:8px 10px;border-radius:8px;font-weight:700;margin:10px 0;">
+Personal Details
+</div>
 
 <table width="100%" style="line-height:2;">
-<tr><td width="180"><b>Name:</b></td><td>{name}</td></tr>
-<tr><td><b>Email:</b></td><td>{contact_email}</td></tr>
-<tr><td><b>Mobile:</b></td><td>{phone}</td></tr>
-<tr><td><b>City:</b></td><td>{city}</td></tr>
-<tr><td><b>Message:</b></td><td>{message}</td></tr>
+<tr><td width="200"><b>Full Name:</b></td><td>{first} {last}</td></tr>
+<tr><td><b>Email:</b></td><td>{applicant_email}</td></tr>
+<tr><td><b>Mobile:</b></td><td>{mobile}</td></tr>
+<tr><td><b>Gender:</b></td><td>{gender or "—"}</td></tr>
+<tr><td><b>Date of Birth:</b></td><td>{dob or "—"}</td></tr>
 </table>
+
+<div style="background:#f1f3ff;border:1px solid #d9ddea;padding:8px 10px;border-radius:8px;font-weight:700;margin:14px 0 8px;">
+Professional Details
+</div>
+
+<table width="100%" style="line-height:2;">
+<tr><td width="200"><b>Position Applied:</b></td><td>{position}</td></tr>
+<tr><td><b>Qualification:</b></td><td>{qualification}</td></tr>
+<tr><td><b>Last Company:</b></td><td>{lastCompany or "—"}</td></tr>
+<tr><td><b>Experience:</b></td><td>{experienceYear or "0"} Years {experienceMonth or "0"} Months</td></tr>
+</table>
+
+<div style="background:#f1f3ff;border:1px solid #d9ddea;padding:8px 10px;border-radius:8px;font-weight:700;margin:14px 0 8px;">
+Additional Information
+</div>
+
+<table width="100%" style="line-height:2;">
+<tr><td width="200"><b>Portfolio:</b></td><td>{portfolio or "—"}</td></tr>
+<tr><td><b>Comments:</b></td><td>{comments or "—"}</td></tr>
+</table>
+
+<div style="margin-top:14px;background:#091a44;color:#ffffff;padding:10px;border-radius:8px;text-align:center;">
+The applicant’s resume is attached with this email.
+</div>
 
 </td>
 </tr>
@@ -391,7 +436,6 @@ Sent to HR: {settings.HR_EMAIL}<br>
 </tr>
 
 </table>
-
 </td>
 </tr>
 </table>
