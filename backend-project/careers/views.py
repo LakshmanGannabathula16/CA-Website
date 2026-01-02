@@ -231,7 +231,7 @@ def apply_form(request):
             city = data.get("city", "")
             message = data.get("message", "")
 
-           html_body = f"""
+            html_body = f"""
 <!DOCTYPE html>
 <html>
 <body style="margin:0;padding:0;background:#e9ecf4;">
