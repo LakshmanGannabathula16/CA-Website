@@ -468,4 +468,4 @@ Sent to HR: {settings.HR_EMAIL}<br>
 
     except Exception as e:
         print("APPLY_FORM ERROR:", e)
-        return JsonResponse({"ok": False, "message": "Server error"}, status=500)
+        return JsonResponse({"ok": False, "message": "Server error"}, status=500) 
