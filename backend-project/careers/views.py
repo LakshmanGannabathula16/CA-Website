@@ -231,57 +231,48 @@ def apply_form(request):
             city = data.get("city", "")
             message = data.get("message", "")
 
-            html_body = f"""
+           html_body = f"""
 <!DOCTYPE html>
 <html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Force minimum width -->
-<style>
-  body, table {
-    -webkit-text-size-adjust: 100% !important;
-    -ms-text-size-adjust: 100% !important;
-  }
-</style>
-</head>
-
 <body style="margin:0;padding:0;background:#e9ecf4;">
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:14px 0;">
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:14px 0;">
 <tr>
 <td align="center">
 
-<!-- MAIN CARD -->
-<table role="presentation"
-       cellpadding="0" cellspacing="0"
-       style="width:760px;min-width:760px;max-width:760px;background:#ffffff;
-              border-radius:14px;border:1px solid #d9ddea;
-              font-family:Arial,Helvetica,sans-serif;">
+<table width="760" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;border:1px solid #d9ddea;font-family:Arial,Helvetica,sans-serif;">
 
+<!-- HEADER -->
 <tr>
-<td style="background:#091a44;padding:22px 10px;border-radius:14px 14px 0 0;">
+<td style="background:#0a1a44;padding:18px 12px;border-radius:14px 14px 0 0;">
 <table width="100%">
 <tr>
-<td align="center"
-    style="color:#ffffff;font-size:22px;font-weight:900;padding:6px 0;">
+<td style="width:30px;">
+    <!-- logo (optional, remove if not needed) -->
+</td>
+
+<td align="center" style="color:#ffffff;font-size:18px;font-weight:900;">
 Pavan Kalyan & Associates
 <br>
-<span style="font-size:14px;color:#dfe5ff;font-weight:600;">
-Chartered Accountants
+<span style="font-size:12px;color:#dfe5ff;font-weight:600;">
+Contact Enquiry
 </span>
 </td>
+
+<td style="width:30px;"></td>
 </tr>
 </table>
 </td>
 </tr>
 
+<!-- BODY -->
 <tr>
-<td style="padding:18px;font-size:15px;color:#1c1c1c;">
-<h4 style="margin:0 0 10px;text-align:center;font-size:16px;">Contact Enquiry</h4>
+<td style="padding:16px 18px;font-size:14px;color:#1c1c1c;">
+
+<b style="display:block;margin-bottom:6px;">Contact Details</b>
 
 <table width="100%" style="line-height:2;">
-<tr><td width="200"><b>Name:</b></td><td>{name}</td></tr>
+<tr><td width="160"><b>Name:</b></td><td>{name}</td></tr>
 <tr><td><b>Email:</b></td><td>{contact_email}</td></tr>
 <tr><td><b>Mobile:</b></td><td>{phone}</td></tr>
 <tr><td><b>City:</b></td><td>{city}</td></tr>
@@ -291,11 +282,11 @@ Chartered Accountants
 </td>
 </tr>
 
+<!-- FOOTER -->
 <tr>
-<td style="background:#f6f8ff;padding:12px;text-align:center;
-           font-size:11px;color:#666;border-radius:0 0 14px 14px;">
+<td style="background:#f8f9ff;padding:10px;text-align:center;font-size:11px;color:#666;border-radius:0 0 14px 14px;">
 Sent to HR: {settings.HR_EMAIL}<br>
-© Pavan Kalyan & Associates — Chartered Accountants
+© Pavan Kalyan & Associates
 </td>
 </tr>
 
@@ -308,6 +299,7 @@ Sent to HR: {settings.HR_EMAIL}<br>
 </body>
 </html>
 """
+
 
             payload = {
                 "personalizations": [{
