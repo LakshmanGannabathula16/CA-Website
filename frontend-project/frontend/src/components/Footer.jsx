@@ -154,9 +154,13 @@ export default function Footer() {
                 © {new Date().getFullYear()} Pavan Kalyan Associates. All Rights Reserved.
                 <br />
                 <span className="text-gray-400">
-                    Designed & Developed by <span className="text-white">Lakshman</span>
+                    Designed & Developed by{" "}
+                    <span className="text-white">
+                        IAC Consultancy Services Private Limited
+                    </span>
                 </span>
             </motion.div>
+
 
         </footer>
     );
