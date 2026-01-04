@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { API_BASE } from "../api";
 import Select from "react-select";
 import DatePicker from "react-date-picker";
+import { Helmet } from "react-helmet";
 
 export default function Careers() {
     const [step, setStep] = useState(1);
@@ -26,6 +27,13 @@ export default function Careers() {
         comments: "",
         resume: null,
     });
+    <Helmet>
+        <title>Careers — Pavan Kalyan & Associates</title>
+        <meta
+            name="description"
+            content="Explore career opportunities at Pavan Kalyan & Associates — grow your career in taxation, GST, audit and accounting."
+        />
+    </Helmet>
 
     const [errors, setErrors] = useState({});
 

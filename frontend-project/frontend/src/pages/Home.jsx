@@ -14,10 +14,18 @@ import payrollImg from "../assets/Payroll.jpeg";
 
 import GetInTouchSection from "../components/GetInTouchSection";
 import NewsUpdatesSection from "../components/NewsUpdatesSection";
+import { Helmet } from "react-helmet";
 
 export default function Home() {
     return (
         <>
+            <Helmet>
+                <title>Pavan Kalyan & Associates — Chartered Accountants in Bengaluru</title>
+                <meta
+                    name="description"
+                    content="Trusted CA firm in Bengaluru providing GST, tax filing, audits, startup registrations and compliance services."
+                />
+            </Helmet>
             <Hero />
 
 
