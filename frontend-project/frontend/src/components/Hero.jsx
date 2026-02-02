@@ -23,7 +23,7 @@ export default function Hero() {
     useEffect(() => {
         const slider = setInterval(() => {
             setCurrent((prev) => (prev + 1) % images.length);
-        }, 8000);
+        }, 6000);
 
         return () => clearInterval(slider);
     }, []);
@@ -57,8 +57,8 @@ export default function Hero() {
                     <div
                         key={i}
                         className={`absolute inset-0 bg-cover bg-center transition-all duration-[4000ms] ease-in-out ${i === current
-                                ? "opacity-100 scale-105"
-                                : "opacity-0 scale-100"
+                            ? "opacity-100 scale-105"
+                            : "opacity-0 scale-100"
                             }`}
                         style={{ backgroundImage: `url(${img})` }}
                     />
