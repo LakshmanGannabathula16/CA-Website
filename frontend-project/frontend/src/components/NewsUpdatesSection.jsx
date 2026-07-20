@@ -31,6 +31,178 @@ export default function NewsUpdatesSection() {
         { date: "07 MAR 2026", title: "Income Tax – TDS/TCS Deposit" },
         { date: "11 MAR 2026", title: "GST – GSTR-1" },
         { date: "20 MAR 2026", title: "GST – GSTR-3B" },
+
+        // ================= APRIL 2026 =================
+        { date: "07 APR 2026", title: "Income Tax – TDS/TCS Deposit (March 2026)" },
+        { date: "10 APR 2026", title: "GST – GSTR-7 (TDS)" },
+        { date: "11 APR 2026", title: "GST – GSTR-1 (Monthly)" },
+        { date: "13 APR 2026", title: "GST – GSTR-5 (Non-Resident Taxable Person)" },
+        { date: "15 APR 2026", title: "Provident Fund (PF) Contribution" },
+        { date: "15 APR 2026", title: "ESI Contribution Payment" },
+        { date: "20 APR 2026", title: "GST – GSTR-3B" },
+        { date: "30 APR 2026", title: "Professional Tax / Monthly Compliance Review" },
+
+        // ================= MAY 2026 =================
+        { date: "07 MAY 2026", title: "Income Tax – TDS/TCS Deposit (April 2026)" },
+        { date: "10 MAY 2026", title: "GST – GSTR-7 (TDS)" },
+        { date: "11 MAY 2026", title: "GST – GSTR-1 (Monthly)" },
+        { date: "13 MAY 2026", title: "GST – GSTR-5 (Non-Resident Taxable Person)" },
+        { date: "15 MAY 2026", title: "Provident Fund (PF) Contribution" },
+        { date: "15 MAY 2026", title: "ESI Contribution Payment" },
+        { date: "20 MAY 2026", title: "GST – GSTR-3B" },
+        { date: "31 MAY 2026", title: "Books of Accounts & GST Reconciliation Review" },
+
+        // ================= JUNE 2026 =================
+        { date: "07 JUN 2026", title: "Income Tax – TDS/TCS Deposit (May 2026)" },
+        { date: "10 JUN 2026", title: "GST – GSTR-7 (TDS)" },
+        { date: "11 JUN 2026", title: "GST – GSTR-1 (Monthly)" },
+        { date: "13 JUN 2026", title: "GST – GSTR-5 (Non-Resident Taxable Person)" },
+        { date: "15 JUN 2026", title: "Advance Tax – First Installment" },
+        { date: "15 JUN 2026", title: "Provident Fund (PF) Contribution" },
+        { date: "15 JUN 2026", title: "ESI Contribution Payment" },
+        { date: "20 JUN 2026", title: "GST – GSTR-3B" },
+        { date: "30 JUN 2026", title: "Quarter-End Accounts & GST Reconciliation" },
+
+        { date: "07 JUL 2026", title: "TDS/TCS Deposit (June 2026)" },
+        { date: "11 JUL 2026", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 JUL 2026", title: "Provident Fund (PF) Contribution" },
+        { date: "15 JUL 2026", title: "ESI Contribution Payment" },
+        { date: "20 JUL 2026", title: "GST GSTR-3B" },
+        { date: "31 JUL 2026", title: "Income Tax Return (Non-Audit Cases)" },
+
+        // ================= AUGUST 2026 =================
+        { date: "07 AUG 2026", title: "TDS/TCS Deposit (July 2026)" },
+        { date: "11 AUG 2026", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 AUG 2026", title: "Provident Fund (PF) Contribution" },
+        { date: "15 AUG 2026", title: "ESI Contribution Payment" },
+        { date: "20 AUG 2026", title: "GST GSTR-3B" },
+        { date: "31 AUG 2026", title: "Advance Tax / Compliance Review" },
+
+        // ================= SEPTEMBER 2026 =================
+        { date: "07 SEP 2026", title: "TDS/TCS Deposit (August 2026)" },
+        { date: "11 SEP 2026", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 SEP 2026", title: "Advance Tax (Second Installment)" },
+        { date: "15 SEP 2026", title: "Provident Fund (PF) Contribution" },
+        { date: "15 SEP 2026", title: "ESI Contribution Payment" },
+        { date: "20 SEP 2026", title: "GST GSTR-3B" },
+
+        // ================= OCTOBER 2026 =================
+        { date: "07 OCT 2026", title: "TDS/TCS Deposit (September 2026)" },
+        { date: "11 OCT 2026", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 OCT 2026", title: "Provident Fund (PF) Contribution" },
+        { date: "15 OCT 2026", title: "ESI Contribution Payment" },
+        { date: "20 OCT 2026", title: "GST GSTR-3B" },
+        { date: "31 OCT 2026", title: "Income Tax Audit Report Filing" },
+
+        // ================= NOVEMBER 2026 =================
+        { date: "07 NOV 2026", title: "TDS/TCS Deposit (October 2026)" },
+        { date: "11 NOV 2026", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 NOV 2026", title: "Provident Fund (PF) Contribution" },
+        { date: "15 NOV 2026", title: "ESI Contribution Payment" },
+        { date: "20 NOV 2026", title: "GST GSTR-3B" },
+        { date: "30 NOV 2026", title: "Income Tax Return (Audit Cases)" },
+
+        // ================= DECEMBER 2026 =================
+        { date: "07 DEC 2026", title: "TDS/TCS Deposit (November 2026)" },
+        { date: "11 DEC 2026", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 DEC 2026", title: "Advance Tax (Third Installment)" },
+        { date: "15 DEC 2026", title: "Provident Fund (PF) Contribution" },
+        { date: "15 DEC 2026", title: "ESI Contribution Payment" },
+        { date: "20 DEC 2026", title: "GST GSTR-3B" },
+
+        // ================= JANUARY 2027 =================
+        { date: "07 JAN 2027", title: "TDS/TCS Deposit (December 2026)" },
+        { date: "11 JAN 2027", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 JAN 2027", title: "Provident Fund (PF) Contribution" },
+        { date: "15 JAN 2027", title: "ESI Contribution Payment" },
+        { date: "20 JAN 2027", title: "GST GSTR-3B" },
+
+        // ================= FEBRUARY 2027 =================
+        { date: "07 FEB 2027", title: "TDS/TCS Deposit (January 2027)" },
+        { date: "11 FEB 2027", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 FEB 2027", title: "Provident Fund (PF) Contribution" },
+        { date: "15 FEB 2027", title: "ESI Contribution Payment" },
+        { date: "20 FEB 2027", title: "GST GSTR-3B" },
+
+        // ================= MARCH 2027 =================
+        { date: "07 MAR 2027", title: "TDS/TCS Deposit (February 2027)" },
+        { date: "11 MAR 2027", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 MAR 2027", title: "Advance Tax (Fourth Installment)" },
+        { date: "15 MAR 2027", title: "Provident Fund (PF) Contribution" },
+        { date: "15 MAR 2027", title: "ESI Contribution Payment" },
+        { date: "20 MAR 2027", title: "GST GSTR-3B" },
+
+        // ================= APRIL 2027 =================
+        { date: "07 APR 2027", title: "TDS/TCS Deposit (March 2027)" },
+        { date: "11 APR 2027", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 APR 2027", title: "Provident Fund (PF) Contribution" },
+        { date: "15 APR 2027", title: "ESI Contribution Payment" },
+        { date: "20 APR 2027", title: "GST GSTR-3B" },
+
+        // ================= MAY 2027 =================
+        { date: "07 MAY 2027", title: "TDS/TCS Deposit (April 2027)" },
+        { date: "11 MAY 2027", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 MAY 2027", title: "Provident Fund (PF) Contribution" },
+        { date: "15 MAY 2027", title: "ESI Contribution Payment" },
+        { date: "20 MAY 2027", title: "GST GSTR-3B" },
+
+        // ================= JUNE 2027 =================
+        { date: "07 JUN 2027", title: "TDS/TCS Deposit (May 2027)" },
+        { date: "11 JUN 2027", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 JUN 2027", title: "Advance Tax (First Installment)" },
+        { date: "15 JUN 2027", title: "Provident Fund (PF) Contribution" },
+        { date: "15 JUN 2027", title: "ESI Contribution Payment" },
+        { date: "20 JUN 2027", title: "GST GSTR-3B" },
+
+
+        // ================= JULY 2027 =================
+        { date: "07 JUL 2027", title: "TDS/TCS Deposit (June 2027)" },
+        { date: "11 JUL 2027", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 JUL 2027", title: "Provident Fund (PF) Contribution" },
+        { date: "15 JUL 2027", title: "ESI Contribution Payment" },
+        { date: "20 JUL 2027", title: "GST GSTR-3B" },
+        { date: "31 JUL 2027", title: "Income Tax Return (Non-Audit Cases)" },
+
+        // ================= AUGUST 2027 =================
+        { date: "07 AUG 2027", title: "TDS/TCS Deposit (July 2027)" },
+        { date: "11 AUG 2027", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 AUG 2027", title: "Provident Fund (PF) Contribution" },
+        { date: "15 AUG 2027", title: "ESI Contribution Payment" },
+        { date: "20 AUG 2027", title: "GST GSTR-3B" },
+
+        // ================= SEPTEMBER 2027 =================
+        { date: "07 SEP 2027", title: "TDS/TCS Deposit (August 2027)" },
+        { date: "11 SEP 2027", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 SEP 2027", title: "Advance Tax (Second Installment)" },
+        { date: "15 SEP 2027", title: "Provident Fund (PF) Contribution" },
+        { date: "15 SEP 2027", title: "ESI Contribution Payment" },
+        { date: "20 SEP 2027", title: "GST GSTR-3B" },
+
+        // ================= OCTOBER 2027 =================
+        { date: "07 OCT 2027", title: "TDS/TCS Deposit (September 2027)" },
+        { date: "11 OCT 2027", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 OCT 2027", title: "Provident Fund (PF) Contribution" },
+        { date: "15 OCT 2027", title: "ESI Contribution Payment" },
+        { date: "20 OCT 2027", title: "GST GSTR-3B" },
+        { date: "31 OCT 2027", title: "Income Tax Audit Report Filing" },
+
+        // ================= NOVEMBER 2027 =================
+        { date: "07 NOV 2027", title: "TDS/TCS Deposit (October 2027)" },
+        { date: "11 NOV 2027", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 NOV 2027", title: "Provident Fund (PF) Contribution" },
+        { date: "15 NOV 2027", title: "ESI Contribution Payment" },
+        { date: "20 NOV 2027", title: "GST GSTR-3B" },
+        { date: "30 NOV 2027", title: "Income Tax Return (Audit Cases)" },
+
+        // ================= DECEMBER 2027 =================
+        { date: "07 DEC 2027", title: "TDS/TCS Deposit (November 2027)" },
+        { date: "11 DEC 2027", title: "GST GSTR-1 (Monthly)" },
+        { date: "15 DEC 2027", title: "Advance Tax (Third Installment)" },
+        { date: "15 DEC 2027", title: "Provident Fund (PF) Contribution" },
+        { date: "15 DEC 2027", title: "ESI Contribution Payment" },
+        { date: "20 DEC 2027", title: "GST GSTR-3B" },
+
+
     ];
 
 
@@ -39,14 +211,26 @@ export default function NewsUpdatesSection() {
     const parseDate = (value) => {
         if (!value) return null;
 
+        // ISO/API date format
         const apiDate = new Date(value);
-        if (!isNaN(apiDate)) return apiDate;
-
-        if (typeof value === "string") {
-            const [dd, mon, yyyy] = value.split(" ");
-            const m = MONTHS.indexOf(mon);
-            if (m !== -1) return new Date(+yyyy, m, +dd);
+        if (!isNaN(apiDate.getTime())) {
+            return apiDate;
         }
+
+        // DD MON YYYY format
+        if (typeof value === "string") {
+            const parts = value.trim().split(/\s+/);
+
+            if (parts.length === 3) {
+                const [day, month, year] = parts;
+                const monthIndex = MONTHS.indexOf(month.toUpperCase());
+
+                if (monthIndex !== -1) {
+                    return new Date(Number(year), monthIndex, Number(day));
+                }
+            }
+        }
+
         return null;
     };
 
@@ -87,7 +271,9 @@ export default function NewsUpdatesSection() {
         .map(d => ({ ...d, _date: parseDate(d.date) }))
         .filter(d => d._date)
         .sort((a, b) => a._date - b._date);
-
+    console.log("Due Dates:", dueDates);
+    console.log("Month Filter:", monthFilter);
+    console.log("Filtered Due Dates:", filteredDueDates);
     const startAutoScroll = (ref, key, speed) => {
         const el = ref.current;
         if (!el) return;
